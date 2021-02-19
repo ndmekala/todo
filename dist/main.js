@@ -1,0 +1,1 @@
+(()=>{"use strict";console.table({task:"hi",notes:"hi",dueDate:"hi",priority:"hi",checklist:"hi",isComplete:"hi"})})();
