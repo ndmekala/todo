@@ -1,1 +1,1 @@
-(()=>{"use strict";console.table({task:"hi",notes:"hi",dueDate:"hi",priority:"hi",checklist:"hi",isComplete:"hi"})})();
+(()=>{"use strict";const t=(t,a,r,o,e)=>({task:t,notes:a,dueDate:r,priority:o,checklist:e});function a(t){let a;var r;a=localStorage.taskArray?JSON.parse(localStorage.taskArray):[],a.push(t),r=a,localStorage.taskArray=JSON.stringify(r)}a(t("task","note1","date1","priority1",["one","two"])),a(t("task","note2","date2","priority2",["anotherone","second"])),console.table(JSON.parse(localStorage.taskArray))})();

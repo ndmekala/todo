@@ -1,5 +1,5 @@
-const makeToDo = (task, notes, dueDate, priority, checklist, isComplete) => {
-    return {task, notes, dueDate, priority, checklist, isComplete}
+const makeToDo = (task, notes, dueDate, priority, checklist) => {
+    return {task, notes, dueDate, priority, checklist}
 }
 
 export { makeToDo }
