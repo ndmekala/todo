@@ -1,21 +1,27 @@
 import { makeToDo } from './maketodo.js'
-
+import { pagePopulate } from './dom.js'
 
 function addToDo(todo) {
     let arr
     if (localStorage.taskArray) {
-        arr = JSON.parse(localStorage.taskArray);
+        arr = storageArray()
     } else {
         arr = [];
     }
     arr.push(todo);
-    updateLocalStorage(arr)
+    localStorage.taskArray = JSON.stringify(arr);
 }
 
-function updateLocalStorage(a) {
-    localStorage.taskArray = JSON.stringify(a)
+function createProject() {
+
 }
 
-addToDo(makeToDo('task', 'note1', 'date1', 'priority1', ['one', 'two']))
-addToDo(makeToDo('task', 'note2', 'date2', 'priority2', ['anotherone', 'second']))
-console.table(JSON.parse(localStorage.taskArray));
+function storageArray() {
+    return JSON.parse(localStorage.taskArray)
+}
+
+delete localStorage.taskArray
+addToDo(makeToDo('Buy coffee.', 'Preferably light roast.', '2/28/21', 'High', ['Pick out coffee.', 'Purchase.'], 'Home'))
+addToDo(makeToDo('Buy eggs.', 'Cage free.', '2/28/21', 'High', ['Pick out eggs.', 'Purchase.'], 'Home'))
+console.table(storageArray());
+pagePopulate(storageArray())
