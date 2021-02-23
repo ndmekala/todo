@@ -13,6 +13,7 @@ var toDo = (function () {
             arr.push(a);
             localStorage.taskArray = JSON.stringify(arr);
         }
+        // edit: something that… edits… todos…
     }
 })();
 

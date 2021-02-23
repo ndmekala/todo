@@ -9,10 +9,6 @@ var domLogic = (function () {
     closebox.addEventListener(('click'), () => {
         document.querySelector('#my-form').style.display = 'none';
     })
-    // “You should separate your application logic (i.e. creating new todos, setting todos
-    // as complete, changing todo priority etc.) from the DOM -related stuff
-    // so keep all of those things in sepearate modules”
-    // Heheh 😅
     const newtodo = document.querySelector('#newtodo')
     newtodo.addEventListener(('click'), () => {
         let task = document.getElementById('task').value;
@@ -61,24 +57,39 @@ var domLogic = (function () {
             const displayElement = (currentValue) => {
                 // build this without .innerHTML… use appendChild or something
                 // will need this for the nuanced styling each to-do will need…
-                for (let key in currentValue) {
-                    // and may need to do this without “in” because different keys
-                    // have different needs
-                    box.innerHTML += key + ': ' + currentValue[key] + '<br>';
-                }
-                box.innerHTML += '<br>'
+                // DIFF
+                const task = document.createElement('h4');
+                task.textContent = currentValue.task;
+                box.appendChild(task);
+
+                const notes = document.createElement('p');
+                notes.textContent = currentValue.notes;
+                box.appendChild(notes);
+
+                const dueDate = document.createElement('p');
+                dueDate.textContent = currentValue.dueDate;
+                box.appendChild(dueDate);
+
+                const priority = document.createElement('p');
+                priority.textContent = currentValue.priority;
+                box.appendChild(priority)
+
+                // idea: make an unordered list for each *array*
+                // and then each *item* is a new list item
+                // forEach over it
+                const checklist = document.createElement('p');
+                checklist.textContent = currentValue.checklist;
+                box.appendChild(checklist)
+
             }
             let projectArray = domLogic.buildProjectArray(a);
             projectArray.forEach(element => {
-                box.innerHTML += `<h2>${element}</h2><br>`
-                const subset = a.filter(e => e.project === element)
-                subset.forEach(todo => displayElement(todo))
+                const proj = document.createElement('h2');
+                proj.textContent = element;
+                box.appendChild(proj);
+                const projToDos = a.filter(e => e.project === element)
+                projToDos.forEach(todo => displayElement(todo))
             })
-
-
-
-            // make sub-arrays for each different project with sort or filter or something
-            // a.forEach(element => displayElement(element))
         }
     }
 })();
