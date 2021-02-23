@@ -78,6 +78,9 @@ var domLogic = (function () {
                 checklist.textContent = currentValue.checklist;
                 box.appendChild(checklist)
 
+                // add button here
+                // give it event listeners
+
             }
             let projectArray = domLogic.buildProjectArray(a);
             projectArray.forEach(element => {
