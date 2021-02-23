@@ -55,9 +55,6 @@ var domLogic = (function () {
             const box = document.querySelector('#testdiv');
             // consider how to make this work with *no* project…
             const displayElement = (currentValue) => {
-                // build this without .innerHTML… use appendChild or something
-                // will need this for the nuanced styling each to-do will need…
-                // DIFF
                 const task = document.createElement('h4');
                 task.textContent = currentValue.task;
                 box.appendChild(task);
