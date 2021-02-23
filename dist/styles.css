@@ -6,4 +6,5 @@ body {
     display: none;
     border: 5px solid magenta;
     padding: 5px;
+    width: 50vw;
 }
