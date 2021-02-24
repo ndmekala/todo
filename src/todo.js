@@ -12,8 +12,34 @@ var toDo = (function () {
             }
             arr.push(a);
             localStorage.taskArray = JSON.stringify(arr);
+        }, 
+        delete: function(obj) {
+            let arr = JSON.parse(localStorage.taskArray)
+            let pos = arr.findIndex(x =>    x.task === obj.task &&
+                                            x.notes === obj.notes &&
+                                            x.dueDate === obj.dueDate &&
+                                            x.priority === obj.priority &&
+                                            x.checklist === obj.checklist &&
+                                            x.project === obj.project)
+            arr.splice(pos, 1)
+            localStorage.taskArray = JSON.stringify(arr);
+        },
+        edit: function(obj, t, n, d, pri, c, pro) {
+            let arr = JSON.parse(localStorage.taskArray)
+            let pos = arr.findIndex(x =>    x.task === obj.task &&
+                                            x.notes === obj.notes &&
+                                            x.dueDate === obj.dueDate &&
+                                            x.priority === obj.priority &&
+                                            x.checklist === obj.checklist &&
+                                            x.project === obj.project)
+            arr[pos].task = t
+            arr[pos].notes = n
+            arr[pos].dueDate = d
+            arr[pos].priority = pri
+            arr[pos].checklist = c
+            arr[pos].project = pro
+            localStorage.taskArray = JSON.stringify(arr);
         }
-        // edit: something that… edits… todos…
     }
 })();
 

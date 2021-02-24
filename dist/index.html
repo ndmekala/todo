@@ -8,38 +8,42 @@
 </head>
 
 <body>
-    <div id="testdiv">
-        <h1>Checklist ✅</h1>
-    </div>
-    <div id="add">+</div>
-    <div class="form-popup" id="my-form">
-        <form>
-            <h3>New To Do</h3>
+    <div id="wrapper">
+        <div id="projlist"></div>
+        <div id="tasklist">
+            <h1>Checklist ✅</h1>
+        </div>
+        <div>
+            <div id="add">+</div>
+            <div class="form-popup" id="my-form">
+                <form>
+                    <h3>New To Do</h3>
 
-            <label for="task">Task</label>
-            <input type="text" name="task" id="task"><br>
+                    <label for="task">Task</label>
+                    <input type="text" name="task" id="task"><br>
 
-            <label for="notes">Notes</label>
-            <input type="text" name="notes" id="notes"><br>
+                    <label for="notes">Notes</label>
+                    <input type="text" name="notes" id="notes"><br>
 
-            <label for="duedate">Due Date</label>
-            <input type="text" name="duedate" id="duedate"><br>
+                    <label for="duedate">Due Date</label>
+                    <input type="text" name="duedate" id="duedate"><br>
 
-            <label for="priority">Priority</label>
-            <select name="priority" id="priority">
-                <option value="High">High</option>
-                <option value="Medium">Medium</option>
-                <option value="Low">Low</option>
-            </select><br>
+                    <label for="priority">Priority</label>
+                    <select name="priority" id="priority">
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Low">Low</option>
+                    </select><br>
 
-            <label for="checklist">Checklist</label>
-            <input type="text" name="checklist" id="checklist"><br>
+                    <label for="checklist">Checklist</label>
+                    <input type="text" name="checklist" id="checklist"><br>
 
-            <label for="project">Project</label>
-            <input type="text" name="project" id="project"><br>
-        </form>
-            <button id="newtodo">Add</button><br>
-            <button id="closebox">Close</button>
+                    <label for="project">Project</label>
+                    <input type="text" name="project" id="project"><br>
+                </form>
+                <button id="newtodo">Add</button><br>
+            </div>
+        </div>
     </div>
     <script src="main.js"></script>
 </body>
