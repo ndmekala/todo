@@ -68,11 +68,23 @@ var domLogic = (function () {
             // consider how to make this work with *no* project…
             const displayElement = (todo) => {
 
-
                 const taskBox = document.createElement('div');
                 taskBox.classList.add('taskBox')
                 const task = document.createElement('h4');
                 task.textContent = todo.task;
+                task.classList.add('task');
+                task.contentEditable = "true";
+                task.addEventListener(('blur'), (e) => {
+                    toDo.edit(  todo,
+                        e.target.textContent,
+                        e.target.parentNode.querySelector('.notes').textContent,
+                        e.target.parentNode.querySelector('.dueDate').textContent,
+                        e.target.parentNode.querySelector('.priority').textContent,
+                        e.target.parentNode.querySelector('.checklist').textContent,
+                        todo.project)
+                    domLogic.clearDOM();
+                    domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
+                })
                 taskBox.appendChild(task);
 
                 const details = document.createElement('div');
@@ -82,31 +94,55 @@ var domLogic = (function () {
                 const notes = document.createElement('p');
                 notes.textContent = todo.notes;
                 notes.classList.add('notes')
-                details.appendChild(notes);
-                notes.addEventListener(('click'), () => {
-                    var editable = document.createElement('textarea')
-                    editable.textContent = notes.textContent
-                    notes.replaceWith(editable);
-                    editable.focus();
-                    editable.addEventListener(('blur'), (e) => {
-                        console.log('tis blurred!!')
-                        // don’t work rn
-                        // need to “save” edited text…
-                        // (then export to toDo.edit()…)
-                        console.log(e.target)
-                        // editable.replaceWith(notes);
-                    });
-                    // notes.blur(console.log('blur!!'));
+                notes.contentEditable = "true";
+                notes.addEventListener(('blur'), (e) => {
+                    toDo.edit(  todo, 
+                        e.target.parentNode.parentNode.querySelector('.task').textContent,
+                        e.target.parentNode.querySelector('.notes').textContent,
+                        e.target.parentNode.querySelector('.dueDate').textContent,
+                        e.target.parentNode.querySelector('.priority').textContent,
+                        e.target.parentNode.querySelector('.checklist').textContent,
+                        todo.project)
+                    domLogic.clearDOM();
+                    domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
                 })
+                details.appendChild(notes);
 
                 const dueDate = document.createElement('p');
                 dueDate.textContent = todo.dueDate;
                 dueDate.classList.add('dueDate')
+                dueDate.contentEditable = "true";
+                dueDate.addEventListener(('blur'), (e) => {
+                    toDo.edit(  todo, 
+                        e.target.parentNode.parentNode.querySelector('.task').textContent,
+                        e.target.parentNode.querySelector('.notes').textContent,
+                        e.target.parentNode.querySelector('.dueDate').textContent,
+                        e.target.parentNode.querySelector('.priority').textContent,
+                        e.target.parentNode.querySelector('.checklist').textContent,
+                        todo.project)
+                    domLogic.clearDOM();
+                    domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
+                })
+                // only weird behavior is that it closes the edit screen once you lose focus because
+                // its totally rebuilding the screen…
+                // solutions… save on blur… rebuild DOM on… clicking “collapse”?
                 details.appendChild(dueDate);
 
                 const priority = document.createElement('p');
                 priority.textContent = todo.priority;
                 priority.classList.add('priority')
+                priority.contentEditable = "true";
+                priority.addEventListener(('blur'), (e) => {
+                    toDo.edit(  todo, 
+                        e.target.parentNode.parentNode.querySelector('.task').textContent,
+                        e.target.parentNode.querySelector('.notes').textContent,
+                        e.target.parentNode.querySelector('.dueDate').textContent,
+                        e.target.parentNode.querySelector('.priority').textContent,
+                        e.target.parentNode.querySelector('.checklist').textContent,
+                        todo.project)
+                    domLogic.clearDOM();
+                    domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
+                })
                 details.appendChild(priority)
 
                 // idea: make an unordered list for each *array*
@@ -115,6 +151,18 @@ var domLogic = (function () {
                 const checklist = document.createElement('p');
                 checklist.textContent = todo.checklist;
                 checklist.classList.add('checklist')
+                checklist.contentEditable = "true";
+                checklist.addEventListener(('blur'), (e) => {
+                    toDo.edit(  todo, 
+                        e.target.parentNode.parentNode.querySelector('.task').textContent,
+                        e.target.parentNode.querySelector('.notes').textContent,
+                        e.target.parentNode.querySelector('.dueDate').textContent,
+                        e.target.parentNode.querySelector('.priority').textContent,
+                        e.target.parentNode.querySelector('.checklist').textContent,
+                        todo.project)
+                    domLogic.clearDOM();
+                    domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
+                })
                 details.appendChild(checklist)
 
                 const deleteToDo = document.createElement('button');
@@ -126,6 +174,8 @@ var domLogic = (function () {
                 })
                 taskBox.appendChild(deleteToDo);
 
+                // i feel like it would simplify the app logic to make “expand” somethign that was
+                // only one to do at a time
                 const expand = document.createElement('button');
                 expand.textContent = 'Expand';
                 let taskopen = false
@@ -141,14 +191,9 @@ var domLogic = (function () {
                 })
                 taskBox.appendChild(expand);
 
-                const edit = document.createElement('button');
-                edit.textContent = 'Edit';
-                edit.addEventListener(('click'), () => {
-                    toDo.edit(todo);
-                    domLogic.clearDOM();
-                    domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
-                })
-                taskBox.appendChild(edit)
+                // deleted the edit button because it’s built into the way the items are displayed
+                // I am still considering a “submit” button or something… because that could help you
+                // from refocusing the whole damn dom… unless… changing focus out of parentNode refreshes dom…
 
                 box.appendChild(taskBox);
 
