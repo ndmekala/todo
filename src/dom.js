@@ -141,6 +141,9 @@ var domLogic = (function () {
                 // only weird behavior is that it closes the edit screen once you lose focus because
                 // its totally rebuilding the screen…
                 // solutions… save on blur… rebuild DOM on… clicking “collapse”?
+                // better (?) solution: have it like Things.app . editing and viewing details are the same.
+                // only view one to-do at a time. To exit the detailed view is to save/commit saves.
+                // could even add keyboard support TBH
                 details.appendChild(dueDate);
 
                 const priority = document.createElement('p');
