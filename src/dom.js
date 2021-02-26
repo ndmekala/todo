@@ -1,5 +1,5 @@
 import { toDo } from './todo.js'
-import { format, formatDistance } from 'date-fns'
+import { format, formatDistance, formatDuration, isFuture, isThisYear, isTomorrow, startOfDay } from 'date-fns'
 
 var domLogic = (function () {
     let newtaskopen = false
@@ -61,9 +61,54 @@ var domLogic = (function () {
             })
             return projectArray
         },
-        displayDate: function() {
+        displayDate: function(d) {
             let now = new Date();
-            let then = new Date(1995, 11, 10)
+            let then = new Date(2021, 2, 4) // future rn
+            console.log(then)
+            console.log(startOfDay(now))
+            console.log(parseInt((then-startOfDay(now))/(3600*1000*24)))
+            console.log((then-now)/(3600*1000*24*7))
+            console.log(formatDuration(now-then))
+            console.log(now.getDay());
+            // if (d.getFullYear()-now.getFullYear() === 0) {
+                // if (parseInt(d-)
+            // }
+
+            //change then to d
+            
+
+
+            if (isToday(then)) {
+                // it’s today!
+            } else if (isTomorrow(then)) {
+                // it’s not today, but it’s tomorrow
+            } else if (parseInt((then-startOfDay(now))/(3600*1000*24)) <= 6 && (then-startOfDay(now))/(3600*1000*24) > 1) {
+                // it’s not today or tomorrow or the past, but it’s this week
+            } else if (isThisYear(then)) {
+                // it’s not this week, but it is this year
+                if (isFuture(then)) {
+                    // it’s not this week, but it’s this year and it’s in the future: normal
+                } else {
+                    // it’s not this week but it’s this year and it’s in the past:r ed
+                    //made red
+                }
+            } else {
+                // it’s not this year
+                if (isFuture(then)) {
+                    // it’s not this year and it’s in the future: normal
+                } else {
+                    //it’s not this year and it’s in the past: red
+                    //make red
+                }
+            }
+
+
+
+            let random = format(now, 'eee')
+            console.log(now-then)
+            console.log(now.getFullYear()-then.getFullYear())
+            console.log(now.getMonth()-then.getMonth())
+            console.log(random);
             return formatDistance(now, then)
         },
         pagePopulate: function(a) {
@@ -73,6 +118,8 @@ var domLogic = (function () {
             // TESTING DATE STUFF RIGHT HERE!!
             // formatDistance…
             console.log('Kiran is ' + domLogic.displayDate()); //format(new Date(), 'eee'));
+
+            // console log hella examples throughout the week
 
             // consider how to make this work with *no* project…
             const displayElement = (todo) => {
@@ -119,8 +166,8 @@ var domLogic = (function () {
 
                 const dueDate = document.createElement('p');
                 // make this so that if it’s within a week it date-fns and displays “Fri” format… eee
-                // if it’s within the year: “Mar 20” … MMM d
-                // if it’s more than a year: “Mar 2021” MMM yyyy
+                // if it’s within this year: “Mar 20” … MMM d
+                // if it’s next year or later: “Mar 2021” MMM yyyy
                 // if it’s passed and within the year “Mar 20” in RED
                 // if it’s passed and a previous year “Mar 2019” in RED
                 dueDate.textContent = todo.dueDate;
@@ -192,7 +239,7 @@ var domLogic = (function () {
                 })
                 taskBox.appendChild(deleteToDo);
 
-                // i feel like it would simplify the app logic to make “expand” somethign that was
+                // i feel like it would simplify the app logic to make “expand” something that was
                 // only one to do at a time
                 const expand = document.createElement('button');
                 expand.textContent = 'Expand';
