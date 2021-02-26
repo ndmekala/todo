@@ -1,4 +1,5 @@
 import { toDo } from './todo.js'
+import { format, formatDistance } from 'date-fns'
 
 var domLogic = (function () {
     let newtaskopen = false
@@ -18,7 +19,7 @@ var domLogic = (function () {
     newtodo.addEventListener(('click'), () => {
         let task = document.getElementById('task').value;
         let notes = document.getElementById('notes').value;
-        let duedate = document.getElementById('duedate').value;
+        let duedate = new Date();//document.getElementById('duedate').value;
         let priority = document.getElementById('priority').value;
         let checklist = document.getElementById('checklist').value;
         let project = document.getElementById('project').value;
@@ -60,10 +61,18 @@ var domLogic = (function () {
             })
             return projectArray
         },
+        displayDate: function() {
+            let now = new Date();
+            let then = new Date(1995, 11, 10)
+            return formatDistance(now, then)
+        },
         pagePopulate: function(a) {
             const box = document.querySelector('#tasklist');
             const side = document.querySelector('#projlist')
 
+            // TESTING DATE STUFF RIGHT HERE!!
+            // formatDistance…
+            console.log('Kiran is ' + domLogic.displayDate()); //format(new Date(), 'eee'));
 
             // consider how to make this work with *no* project…
             const displayElement = (todo) => {
@@ -109,10 +118,16 @@ var domLogic = (function () {
                 details.appendChild(notes);
 
                 const dueDate = document.createElement('p');
+                // make this so that if it’s within a week it date-fns and displays “Fri” format… eee
+                // if it’s within the year: “Mar 20” … MMM d
+                // if it’s more than a year: “Mar 2021” MMM yyyy
+                // if it’s passed and within the year “Mar 20” in RED
+                // if it’s passed and a previous year “Mar 2019” in RED
                 dueDate.textContent = todo.dueDate;
                 dueDate.classList.add('dueDate')
                 dueDate.contentEditable = "true";
                 dueDate.addEventListener(('blur'), (e) => {
+
                     toDo.edit(  todo, 
                         e.target.parentNode.parentNode.querySelector('.task').textContent,
                         e.target.parentNode.querySelector('.notes').textContent,
