@@ -36,3 +36,35 @@ body {
     color: pink;
     margin: 0 0 5px 0;
 }
+
+.dueDateTest {
+    border: none;
+}
+
+input::-webkit-datetime-edit {
+    display: none;
+}
+
+input {
+    position: relative;
+    width: 87px;
+    height: 20px;
+}
+
+input:before {
+    position: absolute;
+    top: 3px;
+    font-family: Helvetica;
+    /* ENSURE SIZE HERE FITS W OTHER ITEMS */
+    font-size: 15px;
+    content: attr(data-date);
+    display: inline-block;
+    color: black;
+}
+
+input::-webkit-calendar-picker-indicator {
+    position: absolute;
+    top: 2px;
+    right: 0;
+    color: black;
+}

@@ -1,5 +1,5 @@
 import { toDo } from './todo.js'
-import { format, formatDistance, formatDuration, isFuture, isThisYear, isTomorrow, startOfDay } from 'date-fns'
+import { format, formatDistance, formatDuration, isFuture, isToday, isThisYear, isTomorrow, startOfDay } from 'date-fns'
 
 var domLogic = (function () {
     let newtaskopen = false
@@ -63,62 +63,31 @@ var domLogic = (function () {
         },
         displayDate: function(d) {
             let now = new Date();
-            let then = new Date(2021, 2, 4) // future rn
-            console.log(then)
-            console.log(startOfDay(now))
-            console.log(parseInt((then-startOfDay(now))/(3600*1000*24)))
-            console.log((then-now)/(3600*1000*24*7))
-            console.log(formatDuration(now-then))
-            console.log(now.getDay());
-            // if (d.getFullYear()-now.getFullYear() === 0) {
-                // if (parseInt(d-)
-            // }
-
-            //change then to d
-            
-
-
-            if (isToday(then)) {
-                // it’s today!
-            } else if (isTomorrow(then)) {
-                // it’s not today, but it’s tomorrow
-            } else if (parseInt((then-startOfDay(now))/(3600*1000*24)) <= 6 && (then-startOfDay(now))/(3600*1000*24) > 1) {
-                // it’s not today or tomorrow or the past, but it’s this week
-            } else if (isThisYear(then)) {
-                // it’s not this week, but it is this year
-                if (isFuture(then)) {
-                    // it’s not this week, but it’s this year and it’s in the future: normal
+            if (isToday(d)) {
+                return "Today";
+            } else if (isTomorrow(d)) {
+                return "Tomorrow"
+            } else if (parseInt((d-startOfDay(now))/(3600*1000*24)) <= 6 && (d-startOfDay(now))/(3600*1000*24) > 1) {
+                return format(d, 'eee')
+            } else if (isThisYear(d)) {
+                if (isFuture(d)) {
+                    return format(d, 'MMM d')
                 } else {
-                    // it’s not this week but it’s this year and it’s in the past:r ed
-                    //made red
-                }
-            } else {
-                // it’s not this year
-                if (isFuture(then)) {
-                    // it’s not this year and it’s in the future: normal
-                } else {
-                    //it’s not this year and it’s in the past: red
+                    return format(d, 'MMM d')
                     //make red
                 }
-            }
-
-
-
-            let random = format(now, 'eee')
-            console.log(now-then)
-            console.log(now.getFullYear()-then.getFullYear())
-            console.log(now.getMonth()-then.getMonth())
-            console.log(random);
-            return formatDistance(now, then)
+            } else {
+                if (isFuture(d)) {
+                    return format(d, 'MMM yyyy')
+                } else {
+                    return format(d, 'MMM yyyy')
+                    //make red
+                }
+            };
         },
         pagePopulate: function(a) {
             const box = document.querySelector('#tasklist');
             const side = document.querySelector('#projlist')
-
-            // TESTING DATE STUFF RIGHT HERE!!
-            // formatDistance…
-            console.log('Kiran is ' + domLogic.displayDate()); //format(new Date(), 'eee'));
-
             // console log hella examples throughout the week
 
             // consider how to make this work with *no* project…
@@ -174,7 +143,6 @@ var domLogic = (function () {
                 dueDate.classList.add('dueDate')
                 dueDate.contentEditable = "true";
                 dueDate.addEventListener(('blur'), (e) => {
-
                     toDo.edit(  todo, 
                         e.target.parentNode.parentNode.querySelector('.task').textContent,
                         e.target.parentNode.querySelector('.notes').textContent,
@@ -192,6 +160,26 @@ var domLogic = (function () {
                 // only view one to-do at a time. To exit the detailed view is to save/commit saves.
                 // could even add keyboard support TBH
                 details.appendChild(dueDate);
+
+                const test = document.createElement('input');
+                //tryna pull away from testtext
+                const testtext = document.createElement('span');
+                test.type = 'date';
+                test.setAttribute("data-date", '')
+                test.classList.add('dueDateTest')
+                test.addEventListener('change', (e) => {
+                    let arr = e.target.value.split('-')
+                    let dat = new Date(arr[0], arr[1]-1, arr[2])
+                    //store dat…
+                    console.log(domLogic.displayDate(dat))
+                    e.target.setAttribute("data-date", domLogic.displayDate(dat))
+                    // testtext.textContent = domLogic.displayDate(dat)
+                })
+                //tryna get away from testtext
+                details.appendChild(testtext)
+                details.appendChild(test)
+                
+
 
                 const priority = document.createElement('p');
                 priority.textContent = todo.priority;
