@@ -65,6 +65,6 @@ input:before {
 input::-webkit-calendar-picker-indicator {
     position: absolute;
     top: 2px;
-    right: 0;
+    right: 0px;
     color: black;
 }

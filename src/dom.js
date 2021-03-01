@@ -162,21 +162,22 @@ var domLogic = (function () {
                 details.appendChild(dueDate);
 
                 const test = document.createElement('input');
-                //tryna pull away from testtext
-                const testtext = document.createElement('span');
                 test.type = 'date';
                 test.setAttribute("data-date", '')
                 test.classList.add('dueDateTest')
                 test.addEventListener('change', (e) => {
                     let arr = e.target.value.split('-')
                     let dat = new Date(arr[0], arr[1]-1, arr[2])
-                    //store dat…
+                    toDo.edit(todo,
+                        //task,
+                        //notes,
+                        dat,
+                        //priority,
+                        //checklist,
+                        todo.project)
                     console.log(domLogic.displayDate(dat))
                     e.target.setAttribute("data-date", domLogic.displayDate(dat))
-                    // testtext.textContent = domLogic.displayDate(dat)
                 })
-                //tryna get away from testtext
-                details.appendChild(testtext)
                 details.appendChild(test)
                 
 
@@ -193,6 +194,7 @@ var domLogic = (function () {
                         e.target.parentNode.querySelector('.priority').textContent,
                         e.target.parentNode.querySelector('.checklist').textContent,
                         todo.project)
+                    //CLEARING AND REBUILDING DOM IS WEHRE THIS GETS HEAVY HANDED
                     domLogic.clearDOM();
                     domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
                 })
