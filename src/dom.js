@@ -88,7 +88,11 @@ var domLogic = (function () {
         ulToArray: function (ul) {
             let arr = [];
             let nodeList = ul.childNodes;
-            nodeList.forEach(e => {if (e.textContent !== '') {arr.push(e.textContent)}})
+            nodeList.forEach(e => {
+                if (e.textContent !== '' && !e.classList.contains('addChecklistItem')) {
+                    arr.push(e.textContent)
+                    }
+            })
             return arr
         },
         pagePopulate: function(a) {
@@ -152,6 +156,7 @@ var domLogic = (function () {
                             })
                             const addChecklistItem = document.createElement('div');
                                 addChecklistItem.textContent = '+';
+                                addChecklistItem.classList.add('addChecklistItem');
                                 addChecklistItem.addEventListener('click', () => {
                                     const checklistItem = document.createElement('li');
                                     checklistItem.textContent = '';
@@ -192,7 +197,7 @@ var domLogic = (function () {
                                 //deselecting and content editable taken care of by refresh
                             })
                         details.appendChild(submit);
-                        
+
                 box.appendChild(taskBox);
 
             }
