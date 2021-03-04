@@ -85,140 +85,114 @@ var domLogic = (function () {
                 }
             };
         },
+        ulToArray: function (ul) {
+            let arr = [];
+            let nodeList = ul.childNodes;
+            nodeList.forEach(e => {if (e.textContent !== '') {arr.push(e.textContent)}})
+            return arr
+        },
         pagePopulate: function(a) {
             const box = document.querySelector('#tasklist');
             const side = document.querySelector('#projlist')
 
             // consider how to make this work with *no* project…
             const displayElement = (todo) => {
+                // TO ADD: keyboard event listener to merely select
+                // TO ADD: enter event listener… can find the task you’re in by
+                // queryselectoring selected… more specifically opened/ not opened
 
                 const taskBox = document.createElement('div');
-                taskBox.classList.add('taskBox')
-                const task = document.createElement('h4');
-                task.textContent = todo.task;
-                task.classList.add('task');
-                // keyboard event listener to merely select
+                    taskBox.classList.add('taskBox')
+
+                    const task = document.createElement('h4');
+                        task.textContent = todo.task;
+                        task.classList.add('task');
+                        task.addEventListener(('click'), (e) => {
+                            e.target.contentEditable = "true";
+                            e.target.parentNode.querySelector('.taskDetails').style.display = 'block'
+                        })
+                        taskBox.appendChild(task);
                 
-                task.addEventListener(('click'), (e) => {
-                    if (document.querySelector('.selected')) {
-                        document.querySelector('.selected').classList.remove('selected')
-                    };
-                    e.target.classList.add('selected');
-                    e.target.contentEditable = "true";
-                    e.target.parentNode.querySelector('.taskDetails').style.display = 'block'
-                })
+                    const details = document.createElement('div');
+                        details.classList.add('taskDetails')
+                        taskBox.appendChild(details)
 
+                        const notes = document.createElement('p');
+                            notes.textContent = todo.notes;
+                            notes.classList.add('notes')
+                            notes.contentEditable = "true";
+                            details.appendChild(notes);
 
-                //enter event listener… can find the task you’re in by queryselectoring selected…
-                // more specifically opened/ not opened
+                        const dueDate = document.createElement('input');
+                            dueDate.type = 'date';
+                            dueDate.setAttribute("data-date", domLogic.displayDate(Date.parse(todo.dueDate)))
+                            dueDate.classList.add('dueDate')
+                            dueDate.addEventListener('change', (e) => {
+                                let arr = e.target.value.split('-')
+                                let dat = new Date(arr[0], arr[1]-1, arr[2])
+                                e.target.setAttribute("data-date", domLogic.displayDate(dat))
+                            })
+                        details.appendChild(dueDate)
 
-                
-                // task.addEventListener(('blur'), (e) => {
-                //     toDo.edit(  todo,
-                //         e.target.textContent,
-                //         e.target.parentNode.querySelector('.notes').textContent,
-                //         // NO LONGER WORKS e.target.parentNode.querySelector('.dueDate').textContent,
-                //         e.target.parentNode.querySelector('.priority').textContent,
-                //         e.target.parentNode.querySelector('.checklist').textContent,
-                //         todo.project)
-                //     domLogic.clearDOM();
-                //     domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
-                // })
-                taskBox.appendChild(task);
+                        // Just: High / Medium / Low??
+                        // DELETE??
+                        const priority = document.createElement('p');
+                            priority.textContent = todo.priority;
+                            priority.classList.add('priority')
+                            priority.contentEditable = "true";
+                        details.appendChild(priority)
 
-                const details = document.createElement('div');
-                details.classList.add('taskDetails')
-                taskBox.appendChild(details)
+                        const checklist = document.createElement('ul');
+                            checklist.classList.add('checklist');
+                            todo.checklist.forEach(element => {
+                                const checklistItem = document.createElement('li');
+                                checklistItem.textContent = element;
+                                checklistItem.contentEditable = 'true';
+                                checklist.appendChild(checklistItem)                    
+                            })
+                            const addChecklistItem = document.createElement('div');
+                                addChecklistItem.textContent = '+';
+                                addChecklistItem.addEventListener('click', () => {
+                                    const checklistItem = document.createElement('li');
+                                    checklistItem.textContent = '';
+                                    checklistItem.contentEditable = 'true';
+                                    checklist.insertBefore(checklistItem, checklist.lastChild)
+                                })
+                            checklist.appendChild(addChecklistItem);
+                        details.appendChild(checklist)
 
-                const notes = document.createElement('p');
-                notes.textContent = todo.notes;
-                notes.classList.add('notes')
-                notes.contentEditable = "true";
-                details.appendChild(notes);
+                        const deleteToDo = document.createElement('button');
+                            deleteToDo.textContent = "Delete";
+                            deleteToDo.addEventListener(('click'), () => {
+                                toDo.delete(todo);
+                                domLogic.clearDOM();
+                                domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
+                            })
+                            details.appendChild(deleteToDo);
 
-                const dueDate = document.createElement('input');
-                dueDate.type = 'date';
-                dueDate.setAttribute("data-date", domLogic.displayDate(Date.parse(todo.dueDate)))
-                dueDate.classList.add('dueDate')
-                dueDate.addEventListener('change', (e) => {
-                    let arr = e.target.value.split('-')
-                    let dat = new Date(arr[0], arr[1]-1, arr[2])
-                    e.target.setAttribute("data-date", domLogic.displayDate(dat))
-                })
-                details.appendChild(dueDate)
-
-
-                const priority = document.createElement('p');
-                priority.textContent = todo.priority;
-                priority.classList.add('priority')
-                priority.contentEditable = "true";
-                details.appendChild(priority)
-
-                // idea: make an unordered list for each *array*
-                // and then each *item* is a new list item
-                // forEach over it
-                const checklist = document.createElement('p');
-                checklist.textContent = todo.checklist;
-                checklist.classList.add('checklist')
-                checklist.contentEditable = "true";
-                details.appendChild(checklist)
-
-                const deleteToDo = document.createElement('button');
-                deleteToDo.textContent = "Delete";
-                deleteToDo.addEventListener(('click'), () => {
-                    toDo.delete(todo);
-                    domLogic.clearDOM();
-                    domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
-                })
-                details.appendChild(deleteToDo);
-
-                const submit = document.createElement('button');
-                submit.textContent = 'Submit';
-                submit.addEventListener(('click'), (e) => {
-                    let dat
-                    if (e.target.parentNode.querySelector('.dueDate').value) {
-                        let arr = e.target.parentNode.querySelector('.dueDate').value.split('-')
-                        dat = new Date(arr[0], arr[1]-1, arr[2])
-                    } else {
-                        dat = todo.dueDate;
-                    }
-                    toDo.edit(  todo,
-                                e.target.parentNode.parentNode.querySelector('.task').textContent,
-                                e.target.parentNode.querySelector('.notes').textContent,
-                                dat,
-                                e.target.parentNode.querySelector('.priority').textContent,
-                                e.target.parentNode.querySelector('.checklist').textContent,
-                                todo.project)
-                            domLogic.clearDOM();
-                            domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
-                    //deselecting and content editable taken care of by refresh
-                })
-                details.appendChild(submit)
-
-
-                // i feel like it would simplify the app logic to make “expand” something that was
-                // only one to do at a time
-
-
-                // const expand = document.createElement('button');
-                // expand.textContent = 'Expand';
-                // let taskopen = false
-                // expand.addEventListener(('click'), (e) => {
-                //     if (!taskopen) {
-                //         e.target.parentNode.querySelector('.taskDetails').style.display = 'block'
-                //         expand.textContent = 'Collapse';
-                //     } else {
-                //         e.target.parentNode.querySelector('.taskDetails').style.display = 'none'
-                //         expand.textContent = 'Expand';
-                //     }
-                //     taskopen = !taskopen
-                // })
-                // taskBox.appendChild(expand);
-
-                // deleted the edit button because it’s built into the way the items are displayed
-                // I am still considering a “submit” button or something… because that could help you
-                // from refocusing the whole damn dom… unless… changing focus out of parentNode refreshes dom…
-
+                        const submit = document.createElement('button');
+                            submit.textContent = 'Submit';
+                            submit.addEventListener(('click'), (e) => {
+                                let dat
+                                if (e.target.parentNode.querySelector('.dueDate').value) {
+                                    let arr = e.target.parentNode.querySelector('.dueDate').value.split('-')
+                                    dat = new Date(arr[0], arr[1]-1, arr[2])
+                                } else {
+                                    dat = todo.dueDate;
+                                }
+                                toDo.edit(  todo,
+                                            e.target.parentNode.parentNode.querySelector('.task').textContent,
+                                            e.target.parentNode.querySelector('.notes').textContent,
+                                            dat,
+                                            e.target.parentNode.querySelector('.priority').textContent,
+                                            domLogic.ulToArray(e.target.parentNode.querySelector('.checklist')),
+                                            todo.project)
+                                        domLogic.clearDOM();
+                                        domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
+                                //deselecting and content editable taken care of by refresh
+                            })
+                        details.appendChild(submit);
+                        
                 box.appendChild(taskBox);
 
             }

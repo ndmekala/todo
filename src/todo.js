@@ -25,12 +25,18 @@ var toDo = (function () {
             localStorage.taskArray = JSON.stringify(arr);
         },
         edit: function(obj, t, n, d, pri, c, pro) {
+            function arrayEquals (a, b) {
+                return Array.isArray(a) &&
+                Array.isArray(b) &&
+                a.length === b.length &&
+                a.every((val, index) => val === b[index])
+            }
             let arr = JSON.parse(localStorage.taskArray)
             let pos = arr.findIndex(x =>    x.task === obj.task &&
                                             x.notes === obj.notes &&
                                             x.dueDate === obj.dueDate &&
                                             x.priority === obj.priority &&
-                                            x.checklist === obj.checklist &&
+                                            arrayEquals(x.checklist, obj.checklist) &&
                                             x.project === obj.project)
             arr[pos].task = t
             arr[pos].notes = n
