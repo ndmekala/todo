@@ -1,5 +1,5 @@
 import { toDo } from './todo.js'
-import { format, formatDistance, formatDuration, isFuture, isToday, isThisYear, isTomorrow, startOfDay } from 'date-fns'
+import { format, isFuture, isToday, isThisYear, isTomorrow, startOfDay } from 'date-fns'
 
 var domLogic = (function () {
     let newtaskopen = false
@@ -88,7 +88,6 @@ var domLogic = (function () {
         pagePopulate: function(a) {
             const box = document.querySelector('#tasklist');
             const side = document.querySelector('#projlist')
-            // console log hella examples throughout the week
 
             // consider how to make this work with *no* project…
             const displayElement = (todo) => {
@@ -98,18 +97,33 @@ var domLogic = (function () {
                 const task = document.createElement('h4');
                 task.textContent = todo.task;
                 task.classList.add('task');
-                task.contentEditable = "true";
-                task.addEventListener(('blur'), (e) => {
-                    toDo.edit(  todo,
-                        e.target.textContent,
-                        e.target.parentNode.querySelector('.notes').textContent,
-                        e.target.parentNode.querySelector('.dueDate').textContent,
-                        e.target.parentNode.querySelector('.priority').textContent,
-                        e.target.parentNode.querySelector('.checklist').textContent,
-                        todo.project)
-                    domLogic.clearDOM();
-                    domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
+                // keyboard event listener to merely select
+                
+                task.addEventListener(('click'), (e) => {
+                    if (document.querySelector('.selected')) {
+                        document.querySelector('.selected').classList.remove('selected')
+                    };
+                    e.target.classList.add('selected');
+                    e.target.contentEditable = "true";
+                    e.target.parentNode.querySelector('.taskDetails').style.display = 'block'
                 })
+
+
+                //enter event listener… can find the task you’re in by queryselectoring selected…
+                // more specifically opened/ not opened
+
+                
+                // task.addEventListener(('blur'), (e) => {
+                //     toDo.edit(  todo,
+                //         e.target.textContent,
+                //         e.target.parentNode.querySelector('.notes').textContent,
+                //         // NO LONGER WORKS e.target.parentNode.querySelector('.dueDate').textContent,
+                //         e.target.parentNode.querySelector('.priority').textContent,
+                //         e.target.parentNode.querySelector('.checklist').textContent,
+                //         todo.project)
+                //     domLogic.clearDOM();
+                //     domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
+                // })
                 taskBox.appendChild(task);
 
                 const details = document.createElement('div');
@@ -120,84 +134,24 @@ var domLogic = (function () {
                 notes.textContent = todo.notes;
                 notes.classList.add('notes')
                 notes.contentEditable = "true";
-                notes.addEventListener(('blur'), (e) => {
-                    toDo.edit(  todo, 
-                        e.target.parentNode.parentNode.querySelector('.task').textContent,
-                        e.target.parentNode.querySelector('.notes').textContent,
-                        e.target.parentNode.querySelector('.dueDate').textContent,
-                        e.target.parentNode.querySelector('.priority').textContent,
-                        e.target.parentNode.querySelector('.checklist').textContent,
-                        todo.project)
-                    domLogic.clearDOM();
-                    domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
-                })
                 details.appendChild(notes);
 
-                const dueDate = document.createElement('p');
-                // make this so that if it’s within a week it date-fns and displays “Fri” format… eee
-                // if it’s within this year: “Mar 20” … MMM d
-                // if it’s next year or later: “Mar 2021” MMM yyyy
-                // if it’s passed and within the year “Mar 20” in RED
-                // if it’s passed and a previous year “Mar 2019” in RED
-                dueDate.textContent = todo.dueDate;
+                const dueDate = document.createElement('input');
+                dueDate.type = 'date';
+                dueDate.setAttribute("data-date", domLogic.displayDate(Date.parse(todo.dueDate)))
                 dueDate.classList.add('dueDate')
-                dueDate.contentEditable = "true";
-                dueDate.addEventListener(('blur'), (e) => {
-                    toDo.edit(  todo, 
-                        e.target.parentNode.parentNode.querySelector('.task').textContent,
-                        e.target.parentNode.querySelector('.notes').textContent,
-                        e.target.parentNode.querySelector('.dueDate').textContent,
-                        e.target.parentNode.querySelector('.priority').textContent,
-                        e.target.parentNode.querySelector('.checklist').textContent,
-                        todo.project)
-                    domLogic.clearDOM();
-                    domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
-                })
-                // only weird behavior is that it closes the edit screen once you lose focus because
-                // its totally rebuilding the screen…
-                // solutions… save on blur… rebuild DOM on… clicking “collapse”?
-                // better (?) solution: have it like Things.app . editing and viewing details are the same.
-                // only view one to-do at a time. To exit the detailed view is to save/commit saves.
-                // could even add keyboard support TBH
-                details.appendChild(dueDate);
-
-                const test = document.createElement('input');
-                test.type = 'date';
-                test.setAttribute("data-date", '')
-                test.classList.add('dueDateTest')
-                test.addEventListener('change', (e) => {
+                dueDate.addEventListener('change', (e) => {
                     let arr = e.target.value.split('-')
                     let dat = new Date(arr[0], arr[1]-1, arr[2])
-                    toDo.edit(todo,
-                        //task,
-                        //notes,
-                        dat,
-                        //priority,
-                        //checklist,
-                        todo.project)
-                    console.log(domLogic.displayDate(dat))
                     e.target.setAttribute("data-date", domLogic.displayDate(dat))
                 })
-                details.appendChild(test)
-                
+                details.appendChild(dueDate)
 
 
                 const priority = document.createElement('p');
                 priority.textContent = todo.priority;
                 priority.classList.add('priority')
                 priority.contentEditable = "true";
-                priority.addEventListener(('blur'), (e) => {
-                    toDo.edit(  todo, 
-                        e.target.parentNode.parentNode.querySelector('.task').textContent,
-                        e.target.parentNode.querySelector('.notes').textContent,
-                        e.target.parentNode.querySelector('.dueDate').textContent,
-                        e.target.parentNode.querySelector('.priority').textContent,
-                        e.target.parentNode.querySelector('.checklist').textContent,
-                        todo.project)
-                    //CLEARING AND REBUILDING DOM IS WEHRE THIS GETS HEAVY HANDED
-                    domLogic.clearDOM();
-                    domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
-                })
                 details.appendChild(priority)
 
                 // idea: make an unordered list for each *array*
@@ -207,17 +161,6 @@ var domLogic = (function () {
                 checklist.textContent = todo.checklist;
                 checklist.classList.add('checklist')
                 checklist.contentEditable = "true";
-                checklist.addEventListener(('blur'), (e) => {
-                    toDo.edit(  todo, 
-                        e.target.parentNode.parentNode.querySelector('.task').textContent,
-                        e.target.parentNode.querySelector('.notes').textContent,
-                        e.target.parentNode.querySelector('.dueDate').textContent,
-                        e.target.parentNode.querySelector('.priority').textContent,
-                        e.target.parentNode.querySelector('.checklist').textContent,
-                        todo.project)
-                    domLogic.clearDOM();
-                    domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
-                })
                 details.appendChild(checklist)
 
                 const deleteToDo = document.createElement('button');
@@ -227,24 +170,50 @@ var domLogic = (function () {
                     domLogic.clearDOM();
                     domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
                 })
-                taskBox.appendChild(deleteToDo);
+                details.appendChild(deleteToDo);
+
+                const submit = document.createElement('button');
+                submit.textContent = 'Submit';
+                submit.addEventListener(('click'), (e) => {
+                    let dat
+                    if (e.target.parentNode.querySelector('.dueDate').value) {
+                        let arr = e.target.parentNode.querySelector('.dueDate').value.split('-')
+                        dat = new Date(arr[0], arr[1]-1, arr[2])
+                    } else {
+                        dat = todo.dueDate;
+                    }
+                    toDo.edit(  todo,
+                                e.target.parentNode.parentNode.querySelector('.task').textContent,
+                                e.target.parentNode.querySelector('.notes').textContent,
+                                dat,
+                                e.target.parentNode.querySelector('.priority').textContent,
+                                e.target.parentNode.querySelector('.checklist').textContent,
+                                todo.project)
+                            domLogic.clearDOM();
+                            domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
+                    //deselecting and content editable taken care of by refresh
+                })
+                details.appendChild(submit)
+
 
                 // i feel like it would simplify the app logic to make “expand” something that was
                 // only one to do at a time
-                const expand = document.createElement('button');
-                expand.textContent = 'Expand';
-                let taskopen = false
-                expand.addEventListener(('click'), (e) => {
-                    if (!taskopen) {
-                        e.target.parentNode.querySelector('.taskDetails').style.display = 'block'
-                        expand.textContent = 'Collapse';
-                    } else {
-                        e.target.parentNode.querySelector('.taskDetails').style.display = 'none'
-                        expand.textContent = 'Expand';
-                    }
-                    taskopen = !taskopen
-                })
-                taskBox.appendChild(expand);
+
+
+                // const expand = document.createElement('button');
+                // expand.textContent = 'Expand';
+                // let taskopen = false
+                // expand.addEventListener(('click'), (e) => {
+                //     if (!taskopen) {
+                //         e.target.parentNode.querySelector('.taskDetails').style.display = 'block'
+                //         expand.textContent = 'Collapse';
+                //     } else {
+                //         e.target.parentNode.querySelector('.taskDetails').style.display = 'none'
+                //         expand.textContent = 'Expand';
+                //     }
+                //     taskopen = !taskopen
+                // })
+                // taskBox.appendChild(expand);
 
                 // deleted the edit button because it’s built into the way the items are displayed
                 // I am still considering a “submit” button or something… because that could help you

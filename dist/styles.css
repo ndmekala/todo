@@ -10,7 +10,19 @@ body {
     display: none;
     border: 5px solid magenta;
     padding: 5px;
-    width: 50vw;
+    width: 25vw;
+}
+
+#tasklist {
+    width: 50%;
+}
+
+#projlist {
+    width: 20%;
+}
+
+.selected {
+    background-color: lightblue;
 }
 
 .taskDetails {
@@ -59,6 +71,7 @@ input:before {
     font-size: 15px;
     content: attr(data-date);
     display: inline-block;
+    background-color: none;
     color: black;
 }
 
