@@ -75,6 +75,7 @@ var domLogic = (function () {
                 } else {
                     return format(d, 'MMM d')
                     //make red
+                    // lol can’t in javascript dummy
                 }
             } else {
                 if (isFuture(d)) {
@@ -192,23 +193,51 @@ var domLogic = (function () {
                                             e.target.parentNode.querySelector('.priority').textContent,
                                             domLogic.ulToArray(e.target.parentNode.querySelector('.checklist')),
                                             todo.project)
-                                        domLogic.clearDOM();
-                                        domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
-                                //deselecting and content editable taken care of by refresh
+                                domLogic.clearDOM();
+                                domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
                             })
                         details.appendChild(submit);
 
                 box.appendChild(taskBox);
 
             }
-            let projectArray = domLogic.buildProjectArray(a);
             // main list
+            const noProj = document.createElement('h2');
+                noProj.style.color = "lightgray"
+                noProj.textContent = "Unassigned"
+                box.appendChild(noProj)
+            // something that generates every to do not on a project…
+            const projectlessToDos = a.filter (e => e.project === '')
+                projectlessToDos.forEach(todo => displayElement(todo))
+                console.table(projectlessToDos)
+            // plus button to add to no particular project
+                const addProjectlessToDo = document.createElement('div');
+                addProjectlessToDo.textContent = '+';
+                addProjectlessToDo.style.color = "lightgray"
+                addProjectlessToDo.addEventListener(('click'), (event) => {
+                    toDo.add(toDo.make('(new todo)', '(notes)', new Date(), '(priority)', ['(checklist item)'], ''))
+                    domLogic.clearDOM();
+                    domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
+                })
+                box.appendChild(addProjectlessToDo)
+
+
+            let projectArray = domLogic.buildProjectArray(a);
             projectArray.forEach(element => {
                 const proj = document.createElement('h2');
-                proj.textContent = element;
-                box.appendChild(proj);
+                    proj.textContent = element;
+                    box.appendChild(proj);
                 const projToDos = a.filter(e => e.project === element)
-                projToDos.forEach(todo => displayElement(todo))
+                    projToDos.forEach(todo => displayElement(todo))
+                const addTask = document.createElement('div');
+                    addTask.textContent = '+'
+                    addTask.addEventListener(('click'), (event) => {
+                        toDo.add(toDo.make('(new todo)', '(notes)', new Date(), '(priority)', ['(checklist item)'], element))
+                        domLogic.clearDOM();
+                        domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
+                    })
+                    box.appendChild(addTask)
+
             })
             // sidebar
             projectArray.forEach(element => {
@@ -217,6 +246,7 @@ var domLogic = (function () {
                 side.appendChild(sideBarProj);
                 // add event listeners
             })
+            // sidebar add todo
         }
     }
 })();
