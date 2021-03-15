@@ -2,32 +2,32 @@ import { toDo } from './todo.js'
 import { format, isFuture, isToday, isThisYear, isTomorrow, startOfDay } from 'date-fns'
 
 var domLogic = (function () {
-    let newtaskopen = false
-    const add = document.querySelector('#add')
-    add.addEventListener(('click'), () => {
-        if (!newtaskopen) {
-            document.querySelector('#my-form').style.display = 'block';
-            add.textContent = '–'
-        }
-        else {
-            document.querySelector('#my-form').style.display = 'none';
-            add.textContent = '+'
-        }
-        newtaskopen = !newtaskopen
-    })
-    const newtodo = document.querySelector('#newtodo')
-    newtodo.addEventListener(('click'), () => {
-        let task = document.getElementById('task').value;
-        let notes = document.getElementById('notes').value;
-        let duedate = new Date();//document.getElementById('duedate').value;
-        let priority = document.getElementById('priority').value;
-        let checklist = document.getElementById('checklist').value;
-        let project = document.getElementById('project').value;
-        toDo.add(toDo.make(task, notes, duedate, priority, checklist, project));
-        domLogic.clearDOM();
-        domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
-        document.querySelector('#my-form').style.display = 'none';
-    })
+    // let newtaskopen = false
+    // const add = document.querySelector('#add')
+    // add.addEventListener(('click'), () => {
+    //     if (!newtaskopen) {
+    //         document.querySelector('#my-form').style.display = 'block';
+    //         add.textContent = '–'
+    //     }
+    //     else {
+    //         document.querySelector('#my-form').style.display = 'none';
+    //         add.textContent = '+'
+    //     }
+    //     newtaskopen = !newtaskopen
+    // })
+    // const newtodo = document.querySelector('#newtodo')
+    // newtodo.addEventListener(('click'), () => {
+    //     let task = document.getElementById('task').value;
+    //     let notes = document.getElementById('notes').value;
+    //     let duedate = new Date();//document.getElementById('duedate').value;
+    //     let priority = document.getElementById('priority').value;
+    //     let checklist = document.getElementById('checklist').value;
+    //     let project = document.getElementById('project').value;
+    //     toDo.add(toDo.make(task, notes, duedate, priority, checklist, project));
+    //     domLogic.clearDOM();
+    //     domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
+    //     document.querySelector('#my-form').style.display = 'none';
+    // })
     return {
         clearDOM: function () {
             const box = document.querySelector('#tasklist')
@@ -35,7 +35,6 @@ var domLogic = (function () {
             while (box.firstChild) {
                 box.removeChild(box.firstChild);
             }
-            box.innerHTML += "<h1>Checklist ✅</h1>"
 
             while (side.firstChild) {
                 side.removeChild(side.firstChild);
@@ -52,7 +51,7 @@ var domLogic = (function () {
         buildProjectArray: function (a) {
             let b = []
             a.forEach(element => {
-                if (!b.includes(element.project)) {
+                if (!b.includes(element.project) && element.project !== '') {
                     b.push(element.project)
                 }
             })
@@ -96,31 +95,54 @@ var domLogic = (function () {
             })
             return arr
         },
-        pagePopulate: function(a) {
+        displayElement: function (todo) {
             const box = document.querySelector('#tasklist');
-            const side = document.querySelector('#projlist')
+            const taskBox = document.createElement('div');
+                taskBox.classList.add('taskBox')
 
-            // consider how to make this work with *no* project…
-            const displayElement = (todo) => {
-                // TO ADD: keyboard event listener to merely select
-                // TO ADD: enter event listener… can find the task you’re in by
-                // queryselectoring selected… more specifically opened/ not opened
+                const taskComplete = document.createElement('div');
+                    taskComplete.classList.add('taskComplete');
+                    taskComplete.addEventListener(('click'), (e) => {
+                        
+                        if (!e.target.classList.contains('dontCheck')) {
+                            // define and add ✓
+                            const checkmark = document.createElement('span');
+                            checkmark.classList.add('checkmark');
+                            // (pre-lock checkmark itself)
+                            checkmark.classList.add('dontCheck');
+                            checkmark.textContent = '✓'
+                            e.target.appendChild(checkmark);
+                            // cross out and gray task title
+                            e.target.parentNode.querySelector('.task').style.color = 'lightgray';
+                            e.target.parentNode.querySelector('.task').style.textDecoration = 'line-through';
+                            e.target.parentNode.querySelector('.task').style.textDecorationThickness = '2px';
 
-                const taskBox = document.createElement('div');
-                    taskBox.classList.add('taskBox')
+                            // lock todo; delete from list
+                            e.target.parentNode.querySelector('.task').classList.add('dontOpen');
+                            toDo.delete(todo);
 
+                            // lock checkbox
+                            e.target.classList.add('dontCheck')
+                        }
+                    });
+                    taskBox.appendChild(taskComplete);
+
+                const taskText = document.createElement('div');
+                    taskText.classList.add('taskText');
                     const task = document.createElement('h4');
                         task.textContent = todo.task;
                         task.classList.add('task');
                         task.addEventListener(('click'), (e) => {
-                            e.target.contentEditable = "true";
-                            e.target.parentNode.querySelector('.taskDetails').style.display = 'block'
+                            if (!e.target.classList.contains('dontOpen')) {
+                                e.target.contentEditable = "true";
+                                e.target.parentNode.querySelector('.taskDetails').style.display = 'block';
+                            }
                         })
-                        taskBox.appendChild(task);
+                        taskText.appendChild(task);
                 
                     const details = document.createElement('div');
                         details.classList.add('taskDetails')
-                        taskBox.appendChild(details)
+                        taskText.appendChild(details)
 
                         const notes = document.createElement('p');
                             notes.textContent = todo.notes;
@@ -138,14 +160,6 @@ var domLogic = (function () {
                                 e.target.setAttribute("data-date", domLogic.displayDate(dat))
                             })
                         details.appendChild(dueDate)
-
-                        // Just: High / Medium / Low??
-                        // DELETE??
-                        const priority = document.createElement('p');
-                            priority.textContent = todo.priority;
-                            priority.classList.add('priority')
-                            priority.contentEditable = "true";
-                        details.appendChild(priority)
 
                         const checklist = document.createElement('ul');
                             checklist.classList.add('checklist');
@@ -190,49 +204,54 @@ var domLogic = (function () {
                                             e.target.parentNode.parentNode.querySelector('.task').textContent,
                                             e.target.parentNode.querySelector('.notes').textContent,
                                             dat,
-                                            e.target.parentNode.querySelector('.priority').textContent,
                                             domLogic.ulToArray(e.target.parentNode.querySelector('.checklist')),
                                             todo.project)
                                 domLogic.clearDOM();
                                 domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
                             })
                         details.appendChild(submit);
+                    taskBox.appendChild(taskText);
 
-                box.appendChild(taskBox);
+            box.appendChild(taskBox);
+        },
+        pagePopulate: function(a) {
+            const box = document.querySelector('#tasklist');
+            const side = document.querySelector('#projlist')
 
-            }
             // main list
             const noProj = document.createElement('h2');
                 noProj.style.color = "lightgray"
                 noProj.textContent = "Unassigned"
                 box.appendChild(noProj)
             // something that generates every to do not on a project…
+            // the new todos are not gray, which is confusing…
             const projectlessToDos = a.filter (e => e.project === '')
-                projectlessToDos.forEach(todo => displayElement(todo))
-                console.table(projectlessToDos)
+                projectlessToDos.forEach(todo => domLogic.displayElement(todo))
             // plus button to add to no particular project
                 const addProjectlessToDo = document.createElement('div');
+                addProjectlessToDo.classList.add('addToDo');
                 addProjectlessToDo.textContent = '+';
                 addProjectlessToDo.style.color = "lightgray"
                 addProjectlessToDo.addEventListener(('click'), (event) => {
-                    toDo.add(toDo.make('(new todo)', '(notes)', new Date(), '(priority)', ['(checklist item)'], ''))
+                    toDo.add(toDo.make('(new todo)', '(notes)', new Date(), ['(checklist item)'], ''))
                     domLogic.clearDOM();
                     domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
                 })
                 box.appendChild(addProjectlessToDo)
 
-
+            // generate todos on projects
             let projectArray = domLogic.buildProjectArray(a);
             projectArray.forEach(element => {
                 const proj = document.createElement('h2');
                     proj.textContent = element;
                     box.appendChild(proj);
                 const projToDos = a.filter(e => e.project === element)
-                    projToDos.forEach(todo => displayElement(todo))
+                    projToDos.forEach(todo => domLogic.displayElement(todo))
                 const addTask = document.createElement('div');
                     addTask.textContent = '+'
+                    addTask.classList.add('addToDo');
                     addTask.addEventListener(('click'), (event) => {
-                        toDo.add(toDo.make('(new todo)', '(notes)', new Date(), '(priority)', ['(checklist item)'], element))
+                        toDo.add(toDo.make('(new todo)', '(notes)', new Date(), ['(checklist item)'], element))
                         domLogic.clearDOM();
                         domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
                     })
@@ -246,7 +265,7 @@ var domLogic = (function () {
                 side.appendChild(sideBarProj);
                 // add event listeners
             })
-            // sidebar add todo
+            // add project…
         }
     }
 })();
