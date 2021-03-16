@@ -1,5 +1,6 @@
 import { toDo } from './todo.js'
 import { format, isFuture, isToday, isThisYear, isTomorrow, startOfDay } from 'date-fns'
+import { et } from 'date-fns/locale';
 
 var domLogic = (function () {
     // let newtaskopen = false
@@ -97,12 +98,12 @@ var domLogic = (function () {
         },
         displayElement: function (todo) {
             const box = document.querySelector('#tasklist');
-            const taskBox = document.createElement('div');
-                taskBox.classList.add('taskBox')
+            const taskWrapper = document.createElement('div');
+                taskWrapper.classList.add('taskWrapper')
 
-                const taskComplete = document.createElement('div');
-                    taskComplete.classList.add('taskComplete');
-                    taskComplete.addEventListener(('click'), (e) => {
+                const taskBullet = document.createElement('div');
+                    taskBullet.classList.add('taskBullet');
+                    taskBullet.addEventListener(('click'), (e) => {
                         
                         if (!e.target.classList.contains('dontCheck')) {
                             // close taskDetails…
@@ -116,79 +117,87 @@ var domLogic = (function () {
                             checkmark.textContent = '✓';
                             e.target.appendChild(checkmark);
                             // cross out, make uneditable, and gray task title
-                            e.target.parentNode.querySelector('.task').style.color = 'lightgray';
-                            e.target.parentNode.querySelector('.task').style.textDecoration = 'line-through';
-                            e.target.parentNode.querySelector('.task').style.textDecorationThickness = '2px';
-                            e.target.parentNode.querySelector('.task').contentEditable = "false";
+                            e.target.parentNode.querySelector('.taskTitle').style.color = 'lightgray';
+                            e.target.parentNode.querySelector('.taskTitle').style.textDecoration = 'line-through';
+                            e.target.parentNode.querySelector('.taskTitle').style.textDecorationThickness = '2px';
+                            e.target.parentNode.querySelector('.taskTitle').style.cursor = 'default';
+                            e.target.parentNode.querySelector('.taskTitle').contentEditable = "false";
 
                             // lock todo; delete from list
-                            e.target.parentNode.querySelector('.task').classList.add('dontOpen');
+                            e.target.parentNode.querySelector('.taskTitle').classList.add('dontOpen');
                             toDo.delete(todo);
 
                             // lock checkbox
                             e.target.classList.add('dontCheck')
                         }
                     });
-                    taskBox.appendChild(taskComplete);
+                    taskWrapper.appendChild(taskBullet);
 
-                const taskText = document.createElement('div');
-                    taskText.classList.add('taskText');
+                const taskModule = document.createElement('div');
+                    taskModule.classList.add('taskModule');
 
 
-                    const task = document.createElement('h4');
-                        task.textContent = todo.task;
-                        task.classList.add('task');
-                        task.addEventListener(('click'), (e) => {
-                            if (!e.target.classList.contains('dontOpen')) {
-                                e.target.contentEditable = "true";
-                                e.target.parentNode.querySelector('.taskDetails').style.display = 'block';
-                            }
-                        })
-                        taskText.appendChild(task);
-                
-                    const details = document.createElement('div');
-                        details.classList.add('taskDetails')
-                        taskText.appendChild(details)
+                    const taskTitleAndControls = document.createElement('div');
+                        taskTitleAndControls.classList.add('taskTitleAndControls');
+                        const taskTitle = document.createElement('div');
+                            taskTitle.classList.add('taskTitle');
+                            taskTitle.textContent = todo.task;
+                            taskTitle.addEventListener(('click'), (e) => {
+                                if (!e.target.classList.contains('dontOpen')) {
+                                    // close all others…
+                                    e.target.style.cursor = "text";
+                                    e.target.contentEditable = 'true';
+                                    e.target.parentNode.parentNode.querySelector('.taskDetails').style.display = 'block';
+                                    e.target.parentNode.parentNode.querySelector('.taskButtons').style.display = 'block';
 
-                        const randomButton = document.createElement('button');
-                            randomButton.textContent = "🗑";
-                            details.appendChild(randomButton)
-
-                        const deleteToDo = document.createElement('button');
-                            deleteToDo.textContent = "Delete";
-                            deleteToDo.addEventListener(('click'), () => {
-                                toDo.delete(todo);
-                                domLogic.clearDOM();
-                                domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
-                            })
-                            details.appendChild(deleteToDo);
-
-                        const submit = document.createElement('button');
-                            submit.textContent = 'Submit';
-                            submit.addEventListener(('click'), (e) => {
-                                let dat
-                                if (e.target.parentNode.querySelector('.dueDate').value) {
-                                    let arr = e.target.parentNode.querySelector('.dueDate').value.split('-')
-                                    dat = new Date(arr[0], arr[1]-1, arr[2])
-                                } else {
-                                    dat = todo.dueDate;
                                 }
-                                toDo.edit(  todo,
-                                            e.target.parentNode.parentNode.querySelector('.task').textContent,
-                                            e.target.parentNode.querySelector('.notes').textContent,
-                                            dat,
-                                            domLogic.ulToArray(e.target.parentNode.querySelector('.checklist')),
-                                            todo.project)
-                                domLogic.clearDOM();
-                                domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
-                            })
-                        details.appendChild(submit);
+                            });
+                            taskTitleAndControls.appendChild(taskTitle);
+                        const taskButtons = document.createElement('div');
+                            taskButtons.classList.add('taskButtons');
+                            const taskDelete = document.createElement('div');
+                                taskDelete.textContent = "🗑";
+                                taskDelete.classList.add('taskDelete')
+                                taskDelete.addEventListener(('click'), () => {
+                                    toDo.delete(todo);
+                                    domLogic.clearDOM();
+                                    domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
+                                })
+                                taskButtons.appendChild(taskDelete);
+                            const taskSubmit = document.createElement('div');
+                                taskSubmit.textContent = "🆗";
+                                taskSubmit.classList.add('taskSubmit')
+                                taskSubmit.addEventListener(('click'), (e) => {
+                                    let dat
+                                    if (e.target.parentNode.parentNode.parentNode.querySelector('.dueDate').value) {
+                                        let arr = e.target.parentNode.parentNode.parentNode.querySelector('.dueDate').value.split('-');
+                                        dat = new Date(arr[0], arr[1]-1, arr[2]);
+                                    } else {
+                                        dat = todo.dueDate;
+                                    }
+                                    toDo.edit(todo,
+                                        e.target.parentNode.parentNode.parentNode.querySelector('.taskTitle').textContent,
+                                        e.target.parentNode.parentNode.parentNode.querySelector('.notes').textContent,
+                                        dat,
+                                        domLogic.ulToArray(e.target.parentNode.parentNode.parentNode.querySelector('.checklist')),
+                                        todo.project)
+                                    domLogic.clearDOM();
+                                    domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
+                                })
+                                taskButtons.appendChild(taskSubmit);
+                            taskTitleAndControls.appendChild(taskButtons);
+
+                        taskModule.appendChild(taskTitleAndControls);
+                
+                    const taskDetails = document.createElement('div');
+                        taskDetails.classList.add('taskDetails')
+                        taskModule.appendChild(taskDetails)
 
                         const notes = document.createElement('p');
                             notes.textContent = todo.notes;
                             notes.classList.add('notes')
                             notes.contentEditable = "true";
-                            details.appendChild(notes);
+                            taskDetails.appendChild(notes);
 
                         const dueDate = document.createElement('input');
                             dueDate.type = 'date';
@@ -199,7 +208,7 @@ var domLogic = (function () {
                                 let dat = new Date(arr[0], arr[1]-1, arr[2])
                                 e.target.setAttribute("data-date", domLogic.displayDate(dat))
                             })
-                        details.appendChild(dueDate)
+                        taskDetails.appendChild(dueDate)
 
                         const checklist = document.createElement('ul');
                             checklist.classList.add('checklist');
@@ -210,6 +219,7 @@ var domLogic = (function () {
                                 checklist.appendChild(checklistItem)                    
                             })
                             const addChecklistItem = document.createElement('div');
+                                addChecklistItem.classList.add('addChecklistItem');
                                 addChecklistItem.textContent = '+';
                                 addChecklistItem.classList.add('addChecklistItem');
                                 addChecklistItem.addEventListener('click', () => {
@@ -219,10 +229,10 @@ var domLogic = (function () {
                                     checklist.insertBefore(checklistItem, checklist.lastChild)
                                 })
                             checklist.appendChild(addChecklistItem);
-                        details.appendChild(checklist)
-                    taskBox.appendChild(taskText);
+                        taskDetails.appendChild(checklist)
+                    taskWrapper.appendChild(taskModule);
 
-            box.appendChild(taskBox);
+            box.appendChild(taskWrapper);
         },
         pagePopulate: function(a) {
             const box = document.querySelector('#tasklist');
@@ -230,7 +240,6 @@ var domLogic = (function () {
 
             // main list
             const noProj = document.createElement('h2');
-                noProj.style.color = "lightgray"
                 noProj.textContent = "Unassigned"
                 box.appendChild(noProj)
             // something that generates every to do not on a project…
@@ -241,7 +250,6 @@ var domLogic = (function () {
                 const addProjectlessToDo = document.createElement('div');
                 addProjectlessToDo.classList.add('addToDo');
                 addProjectlessToDo.textContent = '+';
-                addProjectlessToDo.style.color = "lightgray"
                 addProjectlessToDo.addEventListener(('click'), (event) => {
                     toDo.add(toDo.make('(new todo)', '(notes)', new Date(), ['(checklist item)'], ''))
                     domLogic.clearDOM();
@@ -275,6 +283,16 @@ var domLogic = (function () {
                 side.appendChild(sideBarProj);
                 // add event listeners
             })
+
+            const addProject = document.createElement('div');
+                addProject.classList.add('addProject');
+                addProject.textContent = '+';
+                addProject.addEventListener(('click'), () => {
+                    toDo.add(toDo.make('[ADD TASK]', '[ADD NOTES]', new Date(), ['[ADD CHECKLIST]'], prompt('What do you want to title your project?')))
+                    domLogic.clearDOM();
+                    domLogic.pagePopulate(JSON.parse(localStorage.taskArray));
+               })
+                side.appendChild(addProject);
             // add project…
         }
     }

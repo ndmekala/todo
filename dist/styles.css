@@ -1,13 +1,17 @@
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
-
-#header {
-    text-align: center;
+    color: #555555;
 }
 
 #wrapper {
-    display: flex;
+    position: absolute;
+    right: 0;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    grid-template-rows: 4rem 1fr;
 }
 
 .form-popup {
@@ -25,16 +29,32 @@ body {
     left: -2px;
 }
 
-#tasklist {
-    width: 50%;
-    padding-left: 10px;
+#projlist {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 1;
+    grid-row-end: 3;
+    background-color: #EEEEEE;
+    padding-left: 1rem;
+    padding-top: 1rem;
 }
 
-#projlist {
-    width: 20%;
-    background-color: #EEEEEE;
-    padding-left: 10px;
+#header {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 1;
+    grid-row-end: 2;
+    text-align: left;
+    padding-left: 1rem;
+}
 
+#tasklist {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 
 h4 {
@@ -49,49 +69,97 @@ h4 {
     display: none;
 }
 
-.taskBox {
+.taskWrapper {
     position: relative;
+    padding-left: 5px;
+    padding-top: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    border-radius: 8px;
 }
 
 .addToDo {
-    padding-left: 18px;
+    margin-top: 5px;
+    margin-left: 18px;
+    text-align: center;
+    height: 20px;
+    width: 20px;
+    background-color: lightblue;
+    border-radius: 20px;
 }
 
-.taskComplete {
+.taskBullet {
     width: 10px;
     height: 10px;
-    border: 1px solid lightgray;
+    border: 1px solid black;
     border-radius: 10px;
     position: absolute;
-    top: 4px;
+    top: 8px;
 }
 
-.taskText {
+.taskModule {
     padding-left: 18px;
+}
+
+.taskTitleAndControls {
+    display: flex;
+    justify-content: space-between;
+}
+
+.taskTitle {
+    cursor: pointer;
+}
+
+.taskButtons {
+    display: none;
+}
+
+.taskDelete {
+    font-size: 0.625rem;
+    display: inline-block;
+    margin-right: 10px;
+    padding-bottom: 0.3125rem;
+    cursor: pointer;
+}
+
+.taskSubmit {
+    font-size: 0.625rem;
+    display: inline-block;
+    padding-bottom: 0.3125rem;
+    cursor: pointer;
+    margin-right: 10px;
 }
 
 .notes {
-    color: lightgray;
     margin: 0;
 }
 
 .dueDate {
-    color: red;
-    margin: 0;
-}
-
-.priority {
-    color: blue;
     margin: 0;
 }
 
 .checklist {
-    color: pink;
     margin: 0 0 5px 0;
 }
 
-.dueDateTest {
-    border: none;
+.addProject {
+    margin-top: 5px;
+    margin-left: 0;
+    text-align: center;
+    height: 20px;
+    width: 20px;
+    background-color: lightblue;
+    border-radius: 20px;
+}
+
+.addChecklistItem {
+    margin-top: 5px;
+    margin-left: 0;
+    text-align: center;
+    height: 20px;
+    width: 20px;
+    background-color: white;
+    border-radius: 20px;
 }
 
 input::-webkit-datetime-edit {
@@ -107,14 +175,14 @@ input:before {
     content: attr(data-date);
     display: inline-block;
     background-color: none;
-    color: black;
+    color: #555555;
 }
 
 input::-webkit-calendar-picker-indicator {
     position: absolute;
     top: 2px;
     right: 0px;
-    color: black;
+    color: #555555;
 }
 
 input {
