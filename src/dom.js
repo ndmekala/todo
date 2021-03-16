@@ -105,17 +105,21 @@ var domLogic = (function () {
                     taskComplete.addEventListener(('click'), (e) => {
                         
                         if (!e.target.classList.contains('dontCheck')) {
+                            // close taskDetails…
+                            e.target.parentNode.querySelector('.taskDetails').style.display = 'none';
+                            
                             // define and add ✓
                             const checkmark = document.createElement('span');
                             checkmark.classList.add('checkmark');
                             // (pre-lock checkmark itself)
                             checkmark.classList.add('dontCheck');
-                            checkmark.textContent = '✓'
+                            checkmark.textContent = '✓';
                             e.target.appendChild(checkmark);
-                            // cross out and gray task title
+                            // cross out, make uneditable, and gray task title
                             e.target.parentNode.querySelector('.task').style.color = 'lightgray';
                             e.target.parentNode.querySelector('.task').style.textDecoration = 'line-through';
                             e.target.parentNode.querySelector('.task').style.textDecorationThickness = '2px';
+                            e.target.parentNode.querySelector('.task').contentEditable = "false";
 
                             // lock todo; delete from list
                             e.target.parentNode.querySelector('.task').classList.add('dontOpen');
@@ -129,6 +133,8 @@ var domLogic = (function () {
 
                 const taskText = document.createElement('div');
                     taskText.classList.add('taskText');
+
+
                     const task = document.createElement('h4');
                         task.textContent = todo.task;
                         task.classList.add('task');
@@ -143,6 +149,40 @@ var domLogic = (function () {
                     const details = document.createElement('div');
                         details.classList.add('taskDetails')
                         taskText.appendChild(details)
+
+                        const randomButton = document.createElement('button');
+                            randomButton.textContent = "🗑";
+                            details.appendChild(randomButton)
+
+                        const deleteToDo = document.createElement('button');
+                            deleteToDo.textContent = "Delete";
+                            deleteToDo.addEventListener(('click'), () => {
+                                toDo.delete(todo);
+                                domLogic.clearDOM();
+                                domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
+                            })
+                            details.appendChild(deleteToDo);
+
+                        const submit = document.createElement('button');
+                            submit.textContent = 'Submit';
+                            submit.addEventListener(('click'), (e) => {
+                                let dat
+                                if (e.target.parentNode.querySelector('.dueDate').value) {
+                                    let arr = e.target.parentNode.querySelector('.dueDate').value.split('-')
+                                    dat = new Date(arr[0], arr[1]-1, arr[2])
+                                } else {
+                                    dat = todo.dueDate;
+                                }
+                                toDo.edit(  todo,
+                                            e.target.parentNode.parentNode.querySelector('.task').textContent,
+                                            e.target.parentNode.querySelector('.notes').textContent,
+                                            dat,
+                                            domLogic.ulToArray(e.target.parentNode.querySelector('.checklist')),
+                                            todo.project)
+                                domLogic.clearDOM();
+                                domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
+                            })
+                        details.appendChild(submit);
 
                         const notes = document.createElement('p');
                             notes.textContent = todo.notes;
@@ -180,36 +220,6 @@ var domLogic = (function () {
                                 })
                             checklist.appendChild(addChecklistItem);
                         details.appendChild(checklist)
-
-                        const deleteToDo = document.createElement('button');
-                            deleteToDo.textContent = "Delete";
-                            deleteToDo.addEventListener(('click'), () => {
-                                toDo.delete(todo);
-                                domLogic.clearDOM();
-                                domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
-                            })
-                            details.appendChild(deleteToDo);
-
-                        const submit = document.createElement('button');
-                            submit.textContent = 'Submit';
-                            submit.addEventListener(('click'), (e) => {
-                                let dat
-                                if (e.target.parentNode.querySelector('.dueDate').value) {
-                                    let arr = e.target.parentNode.querySelector('.dueDate').value.split('-')
-                                    dat = new Date(arr[0], arr[1]-1, arr[2])
-                                } else {
-                                    dat = todo.dueDate;
-                                }
-                                toDo.edit(  todo,
-                                            e.target.parentNode.parentNode.querySelector('.task').textContent,
-                                            e.target.parentNode.querySelector('.notes').textContent,
-                                            dat,
-                                            domLogic.ulToArray(e.target.parentNode.querySelector('.checklist')),
-                                            todo.project)
-                                domLogic.clearDOM();
-                                domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
-                            })
-                        details.appendChild(submit);
                     taskBox.appendChild(taskText);
 
             box.appendChild(taskBox);
