@@ -3,32 +3,6 @@ import { format, isFuture, isToday, isThisYear, isTomorrow, startOfDay } from 'd
 import { et } from 'date-fns/locale';
 
 var domLogic = (function () {
-    // let newtaskopen = false
-    // const add = document.querySelector('#add')
-    // add.addEventListener(('click'), () => {
-    //     if (!newtaskopen) {
-    //         document.querySelector('#my-form').style.display = 'block';
-    //         add.textContent = '–'
-    //     }
-    //     else {
-    //         document.querySelector('#my-form').style.display = 'none';
-    //         add.textContent = '+'
-    //     }
-    //     newtaskopen = !newtaskopen
-    // })
-    // const newtodo = document.querySelector('#newtodo')
-    // newtodo.addEventListener(('click'), () => {
-    //     let task = document.getElementById('task').value;
-    //     let notes = document.getElementById('notes').value;
-    //     let duedate = new Date();//document.getElementById('duedate').value;
-    //     let priority = document.getElementById('priority').value;
-    //     let checklist = document.getElementById('checklist').value;
-    //     let project = document.getElementById('project').value;
-    //     toDo.add(toDo.make(task, notes, duedate, priority, checklist, project));
-    //     domLogic.clearDOM();
-    //     domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
-    //     document.querySelector('#my-form').style.display = 'none';
-    // })
     return {
         clearDOM: function () {
             const box = document.querySelector('#tasklist')
@@ -106,8 +80,10 @@ var domLogic = (function () {
                     taskBullet.addEventListener(('click'), (e) => {
                         
                         if (!e.target.classList.contains('dontCheck')) {
-                            // close taskDetails…
+                            // close taskDetails and buttons, remove selected class
                             e.target.parentNode.querySelector('.taskDetails').style.display = 'none';
+                            e.target.parentNode.querySelector('.taskButtons').style.display = 'none';
+                            e.target.parentNode.classList.remove('selected')
                             
                             // define and add ✓
                             const checkmark = document.createElement('span');
@@ -117,6 +93,7 @@ var domLogic = (function () {
                             checkmark.textContent = '✓';
                             e.target.appendChild(checkmark);
                             // cross out, make uneditable, and gray task title
+                            e.target.style.borderColor = 'lightgray';
                             e.target.parentNode.querySelector('.taskTitle').style.color = 'lightgray';
                             e.target.parentNode.querySelector('.taskTitle').style.textDecoration = 'line-through';
                             e.target.parentNode.querySelector('.taskTitle').style.textDecorationThickness = '2px';
@@ -144,12 +121,21 @@ var domLogic = (function () {
                             taskTitle.textContent = todo.task;
                             taskTitle.addEventListener(('click'), (e) => {
                                 if (!e.target.classList.contains('dontOpen')) {
-                                    // close all others…
+                                    const everyTaskWrapper = document.querySelectorAll('.taskWrapper');
+                                    // only issue with this is that it won’t save something that’s open if you don’t hit OK
+                                    everyTaskWrapper.forEach((el) => {
+                                        if (e.target !== el.querySelector('.taskTitle')) {
+                                            el.classList.remove('selected')
+                                            el.querySelector('.taskTitle').contentEditable = 'false';
+                                            el.querySelector('.taskDetails').style.display = 'none';
+                                            el.querySelector('.taskButtons').style.display = 'none';   
+                                        }
+                                    });
                                     e.target.style.cursor = "text";
                                     e.target.contentEditable = 'true';
                                     e.target.parentNode.parentNode.querySelector('.taskDetails').style.display = 'block';
                                     e.target.parentNode.parentNode.querySelector('.taskButtons').style.display = 'block';
-
+                                    e.target.parentNode.parentNode.parentNode.classList.add('selected');
                                 }
                             });
                             taskTitleAndControls.appendChild(taskTitle);
@@ -211,6 +197,7 @@ var domLogic = (function () {
                         taskDetails.appendChild(dueDate)
 
                         const checklist = document.createElement('ul');
+                            //an issue here is that you can’t actually check off checklist items
                             checklist.classList.add('checklist');
                             todo.checklist.forEach(element => {
                                 const checklistItem = document.createElement('li');
@@ -237,13 +224,6 @@ var domLogic = (function () {
         pagePopulate: function(a) {
             const box = document.querySelector('#tasklist');
             const side = document.querySelector('#projlist')
-
-            // main list
-            const noProj = document.createElement('h2');
-                noProj.textContent = "Unassigned"
-                box.appendChild(noProj)
-            // something that generates every to do not on a project…
-            // the new todos are not gray, which is confusing…
             const projectlessToDos = a.filter (e => e.project === '')
                 projectlessToDos.forEach(todo => domLogic.displayElement(todo))
             // plus button to add to no particular project
@@ -293,7 +273,6 @@ var domLogic = (function () {
                     domLogic.pagePopulate(JSON.parse(localStorage.taskArray));
                })
                 side.appendChild(addProject);
-            // add project…
         }
     }
 })();
