@@ -10,15 +10,8 @@ body {
     left: 0;
     bottom: 0;
     display: grid;
-    grid-template-columns: 1fr 3fr;
+    grid-template-columns: 15.625rem 1fr;
     grid-template-rows: 5rem 1fr;
-}
-
-.form-popup {
-    display: none;
-    border: 5px solid magenta;
-    padding: 5px;
-    width: 25vw;
 }
 
 .checkmark {
@@ -55,6 +48,8 @@ body {
     grid-row-end: 3;
     padding-left: 1rem;
     padding-right: 1rem;
+    max-width: 62.5rem;
+    min-width: 30rem;
 }
 
 h4 {
@@ -86,6 +81,7 @@ h4 {
     width: 20px;
     background-color: hsl(195,53%,90%);
     border-radius: 20px;
+    cursor: pointer;
 }
 
 .taskBullet {
@@ -95,6 +91,7 @@ h4 {
     border-radius: 10px;
     position: absolute;
     top: 8px;
+    cursor: pointer;
 }
 
 .taskModule {
@@ -110,36 +107,29 @@ h4 {
     cursor: pointer;
 }
 
-.taskButtons {
-    display: none;
-}
-
 .taskDelete {
-    font-size: 0.625rem;
-    display: inline-block;
+    display: none;
     margin-right: 10px;
-    padding-bottom: 0.3125rem;
     cursor: pointer;
 }
 
 .taskSubmit {
-    font-size: 0.625rem;
-    display: inline-block;
-    padding-bottom: 0.3125rem;
+    display: none;
     cursor: pointer;
     margin-right: 10px;
 }
 
+.taskDate {
+    display: inline-block;
+}
+
 .notes {
     margin: 0;
+    cursor: pointer;
 }
 
 .dueDate {
     margin: 0;
-}
-
-.checklist {
-    margin: 0 0 5px 0;
 }
 
 .addProject {
@@ -150,6 +140,7 @@ h4 {
     width: 20px;
     background-color: lightgray;
     border-radius: 20px;
+    cursor: pointer;
 }
 
 .addChecklistItem {
@@ -168,29 +159,82 @@ input::-webkit-datetime-edit {
     display: none;
 }
 
+div:focus, p:focus, li:focus, input:focus {
+    outline: none;
+}
+
 input:before {
     position: absolute;
     top: 3px;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     /* ENSURE SIZE HERE FITS W OTHER ITEMS */
-    font-size: 15px;
+    font-size: 1rem;
     content: attr(data-date);
     display: inline-block;
-    background-color: hsl(195,53%,90%);
+    background-color: transparent;
     color: #555555;
+}
+
+p {
+    font-size: 1rem;
 }
 
 input::-webkit-calendar-picker-indicator {
     position: absolute;
     top: 2px;
     right: 0px;
-    color: #555555;
+    filter: invert(32%) sepia(4%) saturate(0%) hue-rotate(153deg) brightness(93%) contrast(82%);
+    cursor: pointer;
 }
 
 input {
     position: relative;
-    width: 87px;
+    width: 68px;
     height: 20px;
     border-width: 0px !important;
-    background-color: hsl(195,53%,90%);
+    background-color: transparent;
+}
+
+.addProjectButton {
+    margin-top: 1rem;
+    color: #555555;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 1rem;
+    padding: 0.625rem;
+    background-color: lightgray;
+    border: 0px solid black;
+    border-radius: 0.5rem;
+}
+
+@media (max-width: 760px) {
+    #wrapper {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 5rem 1fr;
+    }
+
+    #header {
+        grid-column-start: 1;
+        grid-column-end: 2;
+        grid-row-start: 1;
+        grid-row-end: 2;
+        text-align: left;
+        padding-left: 1rem;
+    }
+    
+    #tasklist {
+        grid-column-start: 1;
+        grid-column-end: 2;
+        grid-row-start: 2;
+        grid-row-end: 3;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        max-width: 95%;
+        min-width: 95%;
+        width: 95%
+    }
+
+    #projlist {
+        display: none;
+    }
 }
