@@ -14,13 +14,14 @@ var domLogic = (function () {
                 side.removeChild(side.firstChild);
             }
         },
-        sortTaskArray: function (a) {
+        sortTaskArray: function (a) { 
             const b = a.sort(function(first, next) {
-                return first.project > next.project ? 1 : -1
+                return first.dueDate < next.dueDate ? 1 : -1
             });
-            // okay maybe first sort by date then by project and print??
-            // add date sorting once date format regulated
-            return b
+            const c = b.sort(function(first, next) {
+                return first.project.toUpperCase() > next.project.toUpperCase() ? 1 : -1
+            });
+            return c
         },
         buildProjectArray: function (a) {
             let b = []
@@ -30,7 +31,7 @@ var domLogic = (function () {
                 }
             })
             const projectArray = b.sort(function(first, next) {
-                return first > next ? 1 : -1
+                return first.toUpperCase() > next.toUpperCase() ? 1 : -1
             })
             return projectArray
         },
@@ -56,11 +57,24 @@ var domLogic = (function () {
                 }
             };
         },
+        save: function (item, wrapper) {
+            let dat
+            if (wrapper.querySelector('.dueDate').value) {
+                let arr = wrapper.querySelector('.dueDate').value.split('-');
+                dat = new Date(arr[0], arr[1]-1, arr[2]);
+            } else {
+                dat = item.dueDate;
+            }
+            toDo.edit(item,
+                wrapper.querySelector('.taskTitle').textContent,
+                wrapper.querySelector('.notes').textContent,
+                dat,
+                item.project)
+        },
         displayElement: function (todo) {
             const box = document.querySelector('#tasklist');
             const taskWrapper = document.createElement('div');
                 taskWrapper.classList.add('taskWrapper')
-
                 const taskBullet = document.createElement('div');
                     taskBullet.classList.add('taskBullet');
                     taskBullet.addEventListener(('click'), (e) => {
@@ -68,7 +82,7 @@ var domLogic = (function () {
                         if (!e.target.classList.contains('dontCheck')) {
                             // close taskDetails and buttons, remove selected class
                             e.target.parentNode.querySelector('.taskDetails').style.display = 'none';
-                            e.target.parentNode.querySelector('.taskButtons').style.display = 'none';
+                            e.target.parentNode.querySelector('.taskControls').style.display = 'none';
                             e.target.parentNode.classList.remove('selected')
                             
                             // define and add ✓
@@ -97,7 +111,6 @@ var domLogic = (function () {
 
                 const taskModule = document.createElement('div');
                     taskModule.classList.add('taskModule');
-
 
                     const taskTitleAndControls = document.createElement('div');
                         taskTitleAndControls.classList.add('taskTitleAndControls');
@@ -140,18 +153,7 @@ var domLogic = (function () {
                                 taskSubmit.innerHTML = "<img src='../assets/save-svgrepo-com.svg' width='20px' height='20px'>";
                                 taskSubmit.classList.add('taskSubmit')
                                 taskSubmit.addEventListener(('click'), (e) => {
-                                    let dat
-                                    if (e.target.parentNode.parentNode.parentNode.querySelector('.dueDate').value) {
-                                        let arr = e.target.parentNode.parentNode.parentNode.querySelector('.dueDate').value.split('-');
-                                        dat = new Date(arr[0], arr[1]-1, arr[2]);
-                                    } else {
-                                        dat = todo.dueDate;
-                                    }
-                                    toDo.edit(todo,
-                                        e.target.parentNode.parentNode.parentNode.querySelector('.taskTitle').textContent,
-                                        e.target.parentNode.parentNode.parentNode.querySelector('.notes').textContent,
-                                        dat,
-                                        todo.project)
+                                    domLogic.save(todo, e.target.parentNode.parentNode.parentNode.parentNode.parentNode);
                                     domLogic.clearDOM();
                                     domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
                                 })
@@ -167,6 +169,9 @@ var domLogic = (function () {
                                         let arr = e.target.value.split('-')
                                         let dat = new Date(arr[0], arr[1]-1, arr[2])
                                         e.target.setAttribute("data-date", domLogic.displayDate(dat))
+                                        domLogic.save(todo, e.target.parentNode.parentNode.parentNode.parentNode.parentNode)
+                                        domLogic.clearDOM();
+                                        domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
                                     })
                                     taskDate.appendChild(dueDate)
                                 taskControls.appendChild(taskDate)
@@ -186,12 +191,15 @@ var domLogic = (function () {
 
             box.appendChild(taskWrapper);
         },
-        pagePopulate: function(a) {
+        // page populate should be able to make like just a given project or whatever
+        pagePopulate: function(a, project) {
             const box = document.querySelector('#tasklist');
-            const side = document.querySelector('#projlist')
-            const projectlessToDos = a.filter (e => e.project === '')
+            const side = document.querySelector('#projlist');
+            let projectArray = domLogic.buildProjectArray(a);
+            if (project === undefined) {
+                const projectlessToDos = a.filter (e => e.project === '')
                 projectlessToDos.forEach(todo => domLogic.displayElement(todo))
-            // plus button to add to no particular project
+                // plus button to add to no particular project
                 const addProjectlessToDo = document.createElement('div');
                 addProjectlessToDo.classList.add('addToDo');
                 addProjectlessToDo.textContent = '+';
@@ -202,40 +210,67 @@ var domLogic = (function () {
                 })
                 box.appendChild(addProjectlessToDo)
 
-            // generate todos on projects
-            let projectArray = domLogic.buildProjectArray(a);
-            projectArray.forEach(element => {
+                // generate todos on projects
+                projectArray.forEach(element => {
+                    const proj = document.createElement('h2');
+                        proj.textContent = element;
+                        box.appendChild(proj);
+                    const projToDos = a.filter(e => e.project === element)
+                        projToDos.forEach(todo => domLogic.displayElement(todo))
+                    const addTask = document.createElement('div');
+                        addTask.textContent = '+'
+                        addTask.classList.add('addToDo');
+                        addTask.addEventListener(('click'), (event) => {
+                            toDo.add(toDo.make('(new todo)', '(notes)', new Date(), element))
+                            domLogic.clearDOM();
+                            domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
+                        })
+                        box.appendChild(addTask)
+
+                })
+                
+            } else {
                 const proj = document.createElement('h2');
-                    proj.textContent = element;
-                    box.appendChild(proj);
-                const projToDos = a.filter(e => e.project === element)
+                    proj.textContent = project
+                    box.appendChild(proj)
+                const projToDos = a.filter(e => e.project === project)
                     projToDos.forEach(todo => domLogic.displayElement(todo))
                 const addTask = document.createElement('div');
                     addTask.textContent = '+'
                     addTask.classList.add('addToDo');
                     addTask.addEventListener(('click'), (event) => {
-                        toDo.add(toDo.make('(new todo)', '(notes)', new Date(), element))
+                        toDo.add(toDo.make('(new todo)', '(notes)', new Date(), project))
                         domLogic.clearDOM();
                         domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)));
                     })
                     box.appendChild(addTask)
-
-            })
-
+                const viewAll = document.createElement('button');
+                    viewAll.textContent = 'View All Projects';
+                    viewAll.addEventListener(('click'), () => {
+                        domLogic.clearDOM();
+                        domLogic.pagePopulate(JSON.parse(localStorage.taskArray))
+                    })
+                    box.appendChild(viewAll)
+            }
+            
             const addProjectButton = document.createElement('button');
-                addProjectButton.classList.add('addProjectButton');
-                addProjectButton.textContent = 'Add Project';
-                addProjectButton.addEventListener(('click'), () => {
-                    toDo.add(toDo.make('(new todo)', '(notes)', new Date(), prompt('What do you want to title your project?')))
-                    domLogic.clearDOM();
-                    domLogic.pagePopulate(JSON.parse(localStorage.taskArray));
-                })
-                box.appendChild(addProjectButton);
+                    addProjectButton.textContent = 'Add Project';
+                    addProjectButton.addEventListener(('click'), () => {
+                        toDo.add(toDo.make('(new todo)', '(notes)', new Date(), prompt('What do you want to title your project?')))
+                        domLogic.clearDOM();
+                        domLogic.pagePopulate(JSON.parse(localStorage.taskArray));
+                    })
+                    box.appendChild(addProjectButton);
 
             // sidebar
             projectArray.forEach(element => {
                 const sideBarProj = document.createElement('h4');
                 sideBarProj.textContent = element;
+                sideBarProj.style.cursor = 'pointer';
+                sideBarProj.addEventListener('click', () => {
+                    domLogic.clearDOM();
+                    domLogic.pagePopulate(domLogic.sortTaskArray(JSON.parse(localStorage.taskArray)), element);
+                });
                 side.appendChild(sideBarProj);
                 // add event listeners
             })
