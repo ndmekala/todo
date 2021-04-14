@@ -6,10 +6,10 @@ var domLogic = (function () {
         clearDOM: function () {
             const box = document.querySelector('#tasklist')
             const side = document.querySelector('#projlist')
+            document.querySelector('#project-wrapper').style.visibility = "hidden"
             while (box.firstChild) {
                 box.removeChild(box.firstChild);
             }
-
             while (side.firstChild) {
                 side.removeChild(side.firstChild);
             }
@@ -191,7 +191,23 @@ var domLogic = (function () {
 
             box.appendChild(taskWrapper);
         },
-        // page populate should be able to make like just a given project or whatever
+        createProject: function() {
+            if (document.querySelector('#project-text').value) {
+                toDo.add(toDo.make('(new todo)', 'notes', new Date(), document.querySelector('#project-text').value))
+            }
+        },
+        addPopupListeners: function() {
+            const projectForm = document.querySelector('#project-form')
+            projectForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                domLogic.createProject();
+                domLogic.clearDOM();
+                domLogic.pagePopulate(JSON.parse(localStorage.taskArray));
+            })
+            document.querySelector('.project-cancel').addEventListener('click', () => {
+                document.querySelector('#project-wrapper').style.visibility = "hidden";
+            });
+        },
         pagePopulate: function(a, project) {
             const box = document.querySelector('#tasklist');
             const side = document.querySelector('#projlist');
@@ -256,9 +272,7 @@ var domLogic = (function () {
             const addProjectButton = document.createElement('button');
                     addProjectButton.textContent = 'Add Project';
                     addProjectButton.addEventListener(('click'), () => {
-                        toDo.add(toDo.make('(new todo)', '(notes)', new Date(), prompt('What do you want to title your project?')))
-                        domLogic.clearDOM();
-                        domLogic.pagePopulate(JSON.parse(localStorage.taskArray));
+                        document.querySelector('#project-wrapper').style.visibility = "visible"
                     })
                     box.appendChild(addProjectButton);
 
@@ -279,9 +293,7 @@ var domLogic = (function () {
                 addProject.classList.add('addProject');
                 addProject.textContent = '+';
                 addProject.addEventListener(('click'), () => {
-                    toDo.add(toDo.make('(new todo)', '(notes)', new Date(), prompt('What do you want to title your project?')))
-                    domLogic.clearDOM();
-                    domLogic.pagePopulate(JSON.parse(localStorage.taskArray));
+                    document.querySelector('#project-wrapper').style.visibility = "visible"
                })
                 side.appendChild(addProject);
         }
