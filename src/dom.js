@@ -80,27 +80,24 @@ var domLogic = (function () {
     },
     displayElement: function (todo) {
       const box = document.querySelector("#tasklist");
+      // Generate task wrapper
       const taskWrapper = document.createElement("div");
       taskWrapper.classList.add("taskWrapper");
+      // Generate clickable bullet point
       const taskBullet = document.createElement("div");
       taskBullet.classList.add("taskBullet");
       taskBullet.addEventListener("click", (e) => {
         if (!e.target.classList.contains("dontCheck")) {
-          // close taskDetails and buttons, remove selected class
           e.target.parentNode.querySelector(".taskDetails").style.display =
             "none";
           e.target.parentNode.querySelector(".taskControls").style.display =
             "none";
           e.target.parentNode.classList.remove("selected");
-
-          // define and add ✓
           const checkmark = document.createElement("span");
           checkmark.classList.add("checkmark");
-          // (pre-lock checkmark itself)
           checkmark.classList.add("dontCheck");
           checkmark.textContent = "✓";
           e.target.appendChild(checkmark);
-          // cross out, make uneditable, and gray task title
           e.target.style.borderColor = "lightgray";
           e.target.parentNode.querySelector(".taskTitle").style.color =
             "lightgray";
@@ -111,22 +108,20 @@ var domLogic = (function () {
             "default";
           e.target.parentNode.querySelector(".taskTitle").contentEditable =
             "false";
-
-          // lock todo; delete from list
           e.target.parentNode
             .querySelector(".taskTitle")
             .classList.add("dontOpen");
           toDo.delete(todo);
-
-          // lock checkbox
           e.target.classList.add("dontCheck");
         }
       });
       taskWrapper.appendChild(taskBullet);
 
+      // Generate Task Module
       const taskModule = document.createElement("div");
       taskModule.classList.add("taskModule");
 
+      // Generate task title and controls (delete, save, change date)
       const taskTitleAndControls = document.createElement("div");
       taskTitleAndControls.classList.add("taskTitleAndControls");
       const taskTitle = document.createElement("div");
@@ -135,7 +130,6 @@ var domLogic = (function () {
       taskTitle.addEventListener("click", (e) => {
         if (!e.target.classList.contains("dontOpen")) {
           const everyTaskWrapper = document.querySelectorAll(".taskWrapper");
-          // only issue with this is that it won’t save something that’s open if you don’t hit OK
           everyTaskWrapper.forEach((el) => {
             if (e.target !== el.querySelector(".taskTitle")) {
               el.classList.remove("selected");
@@ -215,11 +209,13 @@ var domLogic = (function () {
       taskControls.appendChild(taskDate);
 
       taskModule.appendChild(taskTitleAndControls);
-
+      
+      // Generate Task Details (that display when selected)
       const taskDetails = document.createElement("div");
       taskDetails.classList.add("taskDetails");
       taskModule.appendChild(taskDetails);
 
+      // Generate task notes
       const notes = document.createElement("p");
       notes.textContent = todo.notes;
       notes.classList.add("notes");
@@ -260,10 +256,12 @@ var domLogic = (function () {
       const box = document.querySelector("#tasklist");
       const side = document.querySelector("#projlist");
       let projectArray = domLogic.buildProjectArray(a);
+      // List todos from all projects if nothing specified
       if (project === undefined) {
+        // Display Todos
         const projectlessToDos = a.filter((e) => e.project === "");
         projectlessToDos.forEach((todo) => domLogic.displayElement(todo));
-        // plus button to add to no particular project
+        // Generate a button for adding todos
         const addProjectlessToDo = document.createElement("div");
         addProjectlessToDo.classList.add("addToDo");
         addProjectlessToDo.textContent = "+";
@@ -275,14 +273,15 @@ var domLogic = (function () {
           );
         });
         box.appendChild(addProjectlessToDo);
-
-        // generate todos on projects
+        
+        // display todos with projects
         projectArray.forEach((element) => {
           const proj = document.createElement("h2");
           proj.textContent = element;
           box.appendChild(proj);
           const projToDos = a.filter((e) => e.project === element);
           projToDos.forEach((todo) => domLogic.displayElement(todo));
+          // create a button that adds tasks to a project
           const addTask = document.createElement("div");
           addTask.textContent = "+";
           addTask.classList.add("addToDo");
@@ -296,11 +295,13 @@ var domLogic = (function () {
           box.appendChild(addTask);
         });
       } else {
+        // list todos from given project if specified
         const proj = document.createElement("h2");
         proj.textContent = project;
         box.appendChild(proj);
         const projToDos = a.filter((e) => e.project === project);
         projToDos.forEach((todo) => domLogic.displayElement(todo));
+        // generate a button for adding todos to project
         const addTask = document.createElement("div");
         addTask.textContent = "+";
         addTask.classList.add("addToDo");
@@ -312,6 +313,7 @@ var domLogic = (function () {
           );
         });
         box.appendChild(addTask);
+        // generate a button that loads all projects
         const viewAll = document.createElement("button");
         viewAll.textContent = "View All Projects";
         viewAll.addEventListener("click", () => {
@@ -320,7 +322,7 @@ var domLogic = (function () {
         });
         box.appendChild(viewAll);
       }
-
+      // generate a button that adds project
       const addProjectButton = document.createElement("button");
       addProjectButton.textContent = "Add Project";
       addProjectButton.addEventListener("click", () => {
@@ -328,7 +330,7 @@ var domLogic = (function () {
       });
       box.appendChild(addProjectButton);
 
-      // sidebar
+      // generate sidebar content (project list)
       projectArray.forEach((element) => {
         const sideBarProj = document.createElement("h4");
         sideBarProj.textContent = element;
@@ -341,9 +343,8 @@ var domLogic = (function () {
           );
         });
         side.appendChild(sideBarProj);
-        // add event listeners
       });
-
+      // generate button for adding projects
       const addProject = document.createElement("div");
       addProject.classList.add("addProject");
       addProject.textContent = "+";

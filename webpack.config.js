@@ -8,3 +8,11 @@ module.exports = {
   },
   watch: true,
 };
+
+const productionConfig = merge([
+  {
+    output: {
+      publicPath: '/todo/',
+    }
+  }
+])
