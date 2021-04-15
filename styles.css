@@ -1,0 +1,287 @@
+/* globals */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    color: #555555;
+}
+
+h1, h2, h4 {
+    color: #3CB371;
+}
+
+h4 {
+    margin-top: 6px;
+}
+
+button {
+    margin-top: 1rem;
+    margin-right: 0.5rem;
+    color: #555555;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 1rem;
+    padding: 0.625rem;
+    background-color: #EEEEEE;
+    border: 0px solid black;
+    border-radius: 0.5rem;
+    outline: none;
+    cursor: pointer;
+}
+
+div:focus, p:focus, li:focus, input:focus {
+    outline: none;
+}
+
+p {
+    font-size: 1rem;
+}
+
+/* Date picker styling */
+input::-webkit-datetime-edit {
+    display: none;
+}
+
+input:before {
+    position: absolute;
+    top: 3px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    /* ENSURE SIZE HERE FITS W OTHER ITEMS */
+    font-size: 1rem;
+    content: attr(data-date);
+    display: inline-block;
+    background-color: transparent;
+    color: #555555;
+}
+
+input::-webkit-calendar-picker-indicator {
+    position: absolute;
+    top: 2px;
+    right: 0px;
+    filter: invert(32%) sepia(4%) saturate(0%) hue-rotate(153deg) brightness(93%) contrast(82%);
+    cursor: pointer;
+}
+
+input {
+    position: relative;
+    width: 68px;
+    height: 20px;
+    border-width: 0px !important;
+    background-color: transparent;
+}
+
+/* Add project popup */
+#project-wrapper {
+    position: absolute;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.2);
+    top: 0;
+    left: 0;
+    bottom: 0;
+    visibility: hidden;
+    display: flex;
+    justify-content: center;
+    z-index: 4;
+}
+
+.project-input {
+    margin-top: 3.125rem;
+    padding-top: 3.125rem;
+    border-radius: 1.25rem;
+    width: 25rem;
+    height: 12.5rem;
+    background-color: #ffffff;
+}
+
+#project-text {
+    font-size: 2rem;
+    width: 25rem;
+    height: 2.5rem;
+    text-align: center;
+    font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    color: #555555;
+    cursor: pointer;
+}
+
+.project-create {
+    margin: 1rem 8.625rem;
+}
+
+.project-cancel {
+    margin: 0 10.3125rem;
+}
+
+/* Site Structure */
+#wrapper {
+    position: absolute;
+    right: 0;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    display: grid;
+    grid-template-columns: 15.625rem 1fr;
+    grid-template-rows: 5rem 1fr;
+    z-index: 1;
+}
+
+#projlist {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 1;
+    grid-row-end: 3;
+    background-color: #EEEEEE;
+    padding-left: 1rem;
+    padding-top: 1rem;
+}
+
+#header {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 1;
+    grid-row-end: 2;
+    text-align: left;
+    padding-left: 1rem;
+}
+
+#tasklist {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    max-width: 62.5rem;
+    min-width: 30rem;
+}
+
+/* Mobile View */
+@media (max-width: 760px) {
+    #wrapper {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 5rem 1fr;
+    }
+
+    #header {
+        grid-column-start: 1;
+        grid-column-end: 2;
+        grid-row-start: 1;
+        grid-row-end: 2;
+        text-align: left;
+        padding-left: 1rem;
+    }
+    
+    #tasklist {
+        grid-column-start: 1;
+        grid-column-end: 2;
+        grid-row-start: 2;
+        grid-row-end: 3;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        max-width: 95%;
+        min-width: 95%;
+        width: 95%
+    }
+
+    #projlist {
+        display: none;
+    }
+}
+
+/* Task Wrapper */
+.taskWrapper {
+    position: relative;
+    padding-left: 5px;
+    padding-top: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    border-radius: 8px;
+}
+
+.selected {
+    background-color: hsl(195,53%,90%);
+}
+
+/* Task Bullet*/
+.taskBullet {
+    width: 10px;
+    height: 10px;
+    border: 1px solid black;
+    border-radius: 10px;
+    position: absolute;
+    top: 8px;
+    cursor: pointer;
+}
+
+.checkmark {
+    color: lightgray;
+    position: relative;
+    font-size: 20px;
+    top: -11px;
+    left: -2px;
+}
+
+/* Main Task Module + Controls*/
+.taskModule {
+    padding-left: 18px;
+}
+
+.taskTitleAndControls {
+    display: flex;
+    justify-content: space-between;
+}
+
+.taskTitle {
+    cursor: pointer;
+}
+
+.taskDelete {
+    display: none;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.taskSubmit {
+    display: none;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.taskDate {
+    display: inline-block;
+}
+
+.taskDetails {
+    display: none;
+}
+
+.notes {
+    margin: 0;
+    cursor: pointer;
+    color: #888888;
+    font-size: 0.875rem;
+}
+
+.dueDate {
+    margin: 0;
+}
+
+/* Add buttons */
+.addToDo {
+    margin-top: 5px;
+    margin-left: 18px;
+    text-align: center;
+    height: 20px;
+    width: 20px;
+    background-color: hsl(195,53%,90%);
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.addProject {
+    margin-top: 5px;
+    margin-left: 0;
+    text-align: center;
+    height: 20px;
+    width: 20px;
+    background-color: lightgray;
+    border-radius: 20px;
+    cursor: pointer;
+}
