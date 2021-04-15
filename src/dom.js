@@ -157,7 +157,7 @@ var domLogic = (function () {
       taskControls.classList.add("taskControls");
       const taskDelete = document.createElement("div");
       taskDelete.innerHTML =
-        "<img src='../assets/trash-svgrepo-com.svg' width='20px' height='20px'>";
+        "<img src='./assets/trash-svgrepo-com.svg' width='20px' height='20px'>";
       taskDelete.classList.add("taskDelete");
       taskDelete.addEventListener("click", () => {
         toDo.delete(todo);
@@ -169,7 +169,7 @@ var domLogic = (function () {
       taskControls.appendChild(taskDelete);
       const taskSubmit = document.createElement("div");
       taskSubmit.innerHTML =
-        "<img src='../assets/save-svgrepo-com.svg' width='20px' height='20px'>";
+        "<img src='./assets/save-svgrepo-com.svg' width='20px' height='20px'>";
       taskSubmit.classList.add("taskSubmit");
       taskSubmit.addEventListener("click", (e) => {
         domLogic.save(
