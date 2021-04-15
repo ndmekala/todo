@@ -19,7 +19,7 @@ if (localStorage.taskArray) {
   toDo.add(
     toDo.make(
       "Edit this todo by clicking on its notes.",
-      "Make these bugs go away: 🐞🐞🐞. Then save the todo.",
+      "Click on this text to edit it. Then click the save icon to store everything.",
       new Date(),
       "Get Oriented"
     )
