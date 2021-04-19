@@ -25,18 +25,6 @@ var domLogic = (function () {
       });
       return c;
     },
-    buildProjectArray: function (a) {
-      let b = [];
-      a.forEach((element) => {
-        if (!b.includes(element.project) && element.project !== "") {
-          b.push(element.project);
-        }
-      });
-      const projectArray = b.sort(function (first, next) {
-        return first.toUpperCase() > next.toUpperCase() ? 1 : -1;
-      });
-      return projectArray;
-    },
     displayDate: function (d) {
       let now = new Date();
       if (isToday(d)) {
@@ -98,9 +86,9 @@ var domLogic = (function () {
           checkmark.classList.add("dontCheck");
           checkmark.textContent = "✓";
           e.target.appendChild(checkmark);
-          e.target.style.borderColor = "lightgray";
+          e.target.style.borderColor = "hsl(287, 27%, 90%)";
           e.target.parentNode.querySelector(".taskTitle").style.color =
-            "lightgray";
+            "hsl(287, 27%, 90%)";
           e.target.parentNode.querySelector(
             ".taskTitle"
           ).style.textDecorationThickness = "2px";
@@ -255,7 +243,7 @@ var domLogic = (function () {
     pagePopulate: function (a, project) {
       const box = document.querySelector("#tasklist");
       const side = document.querySelector("#projlist");
-      let projectArray = domLogic.buildProjectArray(a);
+      let projectArray = toDo.buildProjectArray(a);
       // List todos from all projects if nothing specified
       if (project === undefined) {
         // Display Todos
@@ -329,6 +317,29 @@ var domLogic = (function () {
         document.querySelector("#project-wrapper").style.visibility = "visible";
       });
       box.appendChild(addProjectButton);
+      // generate a button that exports to things 3
+      const exportToThings = document.createElement('button');
+      exportToThings.textContent = 'Export to Things 3';
+      exportToThings.addEventListener('click', () => {
+        let json = toDo.convertToThingsJSON(JSON.parse(localStorage.taskArray));
+        window.location.href=toDo.thingsJSONtoURL(json);
+      })
+      box.appendChild(exportToThings);
+      // generate repository link
+      const repositoryLink = document.createElement('button');
+      repositoryLink.textContent = 'Repository';
+      repositoryLink.addEventListener('click', () => {
+        window.location.href='https://www.github.com/ndmekala/todo';
+      })
+      box.appendChild(repositoryLink);
+
+      // generate portfolio link
+      const portfolioLink = document.createElement('button');
+      portfolioLink.textContent = 'Portfolio';
+      portfolioLink.addEventListener('click', () => {
+        window.location.href='https://www.meka.la/';
+      })
+      box.appendChild(portfolioLink);
 
       // generate sidebar content (project list)
       projectArray.forEach((element) => {

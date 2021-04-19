@@ -26,7 +26,7 @@ if (localStorage.taskArray) {
   );
   toDo.add(
     toDo.make(
-      "Create a new todo with the blue buttons.",
+      "Create a new todo with the plus buttons.",
       "It’s pretty straightforward!",
       new Date(),
       "Get Oriented"
