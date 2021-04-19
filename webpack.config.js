@@ -1,4 +1,6 @@
 const path = require('path');
+const { merge } = require('webpack-merge');
+
 
 module.exports = {
   entry: './src/index.js',
